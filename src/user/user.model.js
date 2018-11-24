@@ -3,10 +3,13 @@ const mongoose = require("mongoose"),
       jwt      = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
+    type            : { type: String, required: true },
     email           : { type: String },
-    name            : { type: String, required: true },
+    username        : { type: String, required: true },
     hash            : String,
     salt            : String,
+    grade           : { type: String, default: 'C'},
+    mark            : { type: Number, default: 50 }
 }, { timestamps: true, strict: false });
 
 userSchema.methods.setPassword = function (password) {
@@ -20,10 +23,30 @@ userSchema.methods.validPassword = function (password) {
 };
 
 userSchema.methods.generateJwt = function () {
-    return jwt.sign(this, process.env.SECRET_KEY);
+    return jwt.sign(this._doc, process.env.SECRET_KEY);
+};
+
+userSchema.statics.create = function( doc, password ){
+    let userDoc = new this(doc);
+    userDoc.setPassword( password );
+    return userDoc.save();
 };
 
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
+
+
+// ( async _ => {
+
+//     let newUser = new User({
+//         telephone_no        : '999',
+//         email               : 'admin@admin.com',
+//         username            : 'admin',
+//         type: 'admin'
+//     });
+//     newUser.setPassword( '123');
+//     newUser = await newUser.save();
+
+// })();

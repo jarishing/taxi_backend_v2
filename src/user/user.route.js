@@ -1,17 +1,15 @@
 const express = require('express');
 const userController = require('./user.controller');
 const router = express.Router();
-const jwt = require("express-jwt");
-const auth = jwt({ secret: process.env.SECRET_KEY });
+const auth = require('../utils/auth.js');
 
-router.route('/setup')
-    // used to setup default admin account
-    .get( userController.setup );
-
-router.get('/me', auth, userController.getMyProfile );
+router.get('/:userId', auth, userController.get );
 
 router.route('/login')
     // login route
     .post( userController.login );
+
+router.route('/')
+    .post( auth, userController.create );
 
 module.exports = router;

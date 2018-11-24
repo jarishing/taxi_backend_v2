@@ -2,6 +2,8 @@
 
 module.exports = exports = {
 
-    ValidationError: require('./ValidationError.js')
+    ValidationError: require('./ValidationError.js'),
+
+    MissingParameter: require('./MissingParameter.js')
 
 }
