@@ -32,7 +32,7 @@ const reverseGeocode = async ( lat, lng ) =>{
                 })
                     .asPromise();
 
-    result = response.json.results;
+    result = result.json.results;
     return result;
 };
 
@@ -44,14 +44,16 @@ const autocomplete = async ( keyword ) => {
                     }).asPromise();
 
     result = result.json.predictions;
-
-    for( const item of result){
+                
+    result = result.map( item => new Promise( async resolve => {
         let location = await placeIdToLatLng( item.place_id);
         item['geometry'] = {location};
         item['name'] = item.structured_formatting.main_text;
         item['formatted_address'] = item.structured_formatting.secondary_text;
-    };
+        return resolve( item );
+    }));
 
+    result = await Promise.all( result );
     return result;
 };
 
