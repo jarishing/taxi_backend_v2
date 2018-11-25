@@ -3,7 +3,6 @@ const User     = require('../user.model'),
       apiError = require('server-api-errors'); 
 
 async function get(req, res, next){
-
     const userId = req.user._id;
 
     try {
@@ -13,6 +12,7 @@ async function get(req, res, next){
                         .lean();
         return res.send({ data: user });
     } catch( error ){
+        debug(error)
         return next( apiError.BadRequest() );
     }
 

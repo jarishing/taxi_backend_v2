@@ -18,5 +18,7 @@ module.exports = exports = {
      * Login
      * 
      */
-    login: require('./login.js')
+    login: require('./login.js'),
+
+    load : require('./load')
 };

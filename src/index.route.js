@@ -8,4 +8,6 @@ router.use('/user', require('./user/user.route'));
 
 router.use('/place', require('./place/place.route'));
 
+router.use('/order', require('./order/order.route'));
+
 module.exports = router;

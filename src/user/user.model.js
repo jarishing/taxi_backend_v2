@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
     hash            : String,
     salt            : String,
     grade           : { type: String, default: 'C'},
-    mark            : { type: Number, default: 50 }
+    mark            : { type: Number, default: 50 },
+    valid           : { type: Boolean, default: true }
 }, { timestamps: true, strict: false });
 
 userSchema.methods.setPassword = function (password) {

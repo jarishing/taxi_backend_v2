@@ -6,6 +6,8 @@ module.exports = exports = {
 
     MissingParameter: require('./MissingParameter.js'),
 
-    UserExists: require('./UserExists.js')
+    UserExists: require('./UserExists.js'),
+
+    DocumentNotFound: require('./DocumentNotFound')
 
 };
