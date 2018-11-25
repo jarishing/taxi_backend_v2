@@ -7,7 +7,8 @@ const Order    = require('../order.model'),
 
 async function createOrder( req, res, next ){
 
-    let { origin, destination, route, criteria, status } = req.body;
+
+    let { origin, destination, route, criteria } = req.body;
 
     if( criteria.taxiType != "red" && criteria.taxiType != "green")
         return next( apiError.BadRequest( errors.ValidationError("Taxi Type should be red or green", 'taxiType')));
@@ -42,8 +43,6 @@ async function createOrder( req, res, next ){
                 return next( apiError.BadRequest() );
             [ route.route1, route.route2, route.route3 ] = await Promise.all([ Place.getAddress( route.route1.lat, route.route1.lng ), Place.getAddress( route.route2.lat, route.route2.lng ), Place.getAddress( route.route3.lat, route.route3.lng ) ]);
             break;
-        default:
-            return next( apiError.BadRequest() );
     };
 
     let route1, route2, route3;
@@ -65,15 +64,13 @@ async function createOrder( req, res, next ){
         criteria['time'] = data.time;
         criteria['distance'] = data.distance;
 
-        let order = Order.create({
+        let order = await Order.create({
             start    : origin,
             end      : destination,
             route    : route,
             criteria : criteria,
             orderBy  : req.user._id  
         });
-
-        order = await order.save();
 
         return res.send({ data: order });
     } catch( error ){

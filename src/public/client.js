@@ -49,7 +49,7 @@ async function findPlace(place){
         const response = await axios.get('http://localhost:3100/api/place',     
             { 
                 params: { keyword: place },
-                header: { Authorization: 'Bearer ' + access_token }
+                headers: { Authorization: 'Bearer ' + access_token }
             }
         );
         displayMessage(JSON.stringify(response.data, null, 4));
@@ -72,7 +72,7 @@ async function findAddress(){
         const response = await axios.get('http://localhost:3100/api/place/address',     
             { 
                 params: start,
-                header: { Authorization: 'Bearer ' + access_token }
+                headers: { Authorization: 'Bearer ' + access_token }
             }
         );
         displayMessage(JSON.stringify(response.data, null, 4));
@@ -97,7 +97,7 @@ async function path(){
                 tunnel: 'any'
             },
             { 
-                header: { Authorization: 'Bearer ' + access_token }
+                headers: { Authorization: 'Bearer ' + access_token }
             }
         );
         displayMessage(JSON.stringify(response.data, null, 4));
@@ -106,6 +106,54 @@ async function path(){
         return displayMessage(JSON.stringify(error, null, 4));
     };
 };
+
+/**
+ * 
+ * POST /api/order
+ * 
+ */
+async function createOrder(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/order', 
+            {
+                origin: start, destination: end,
+                criteria: {
+                    taxiType: 'red', 
+                    discount: 100,
+                    tunnel: 'any',
+                    passenger: 4
+                }
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+/**
+ * 
+ * POST /api/order
+ * 
+ */
+async function getOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
 
 /**
  * 

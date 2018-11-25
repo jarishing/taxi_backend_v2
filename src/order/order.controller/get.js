@@ -19,7 +19,7 @@ async function get( req, res, next ){
 
     try {
         order = await bluebird.props( order );
-        return res.json({ data: order});
+        return res.json({ data: order });
     } catch( error ){
         debug(error);
         return next( apiError.BadRequest() );

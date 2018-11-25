@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 orderSchema.statics.create = function( orderDoc ){
-    doc = new this(orderDoc);
+    let doc = new this(orderDoc);
     return doc.save();
 };
 

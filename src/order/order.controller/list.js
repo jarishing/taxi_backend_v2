@@ -11,11 +11,8 @@ async function getOrders( req, res, next ){
         condition.status = req.query.status;
 
     try {
-        const orders = Order.find(condition).lean();
-        return res.json({
-            data: orders,
-            count: orders.length
-        });
+        const orders = await Order.find(condition).lean();
+        return res.json({ data: orders, count: orders.length });
     } catch( error ){
         console.error(error)
         return next( apiError.InternalServerError() );
