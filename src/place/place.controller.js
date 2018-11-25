@@ -87,7 +87,7 @@ async function path ( req, res, next ){
 
     try{
         let data = await costCal( origin, destination, route1, route2, route3, taxiType, tunnel, discount );
-        return res.send(data);
+        return res.send({ data });
     } catch( error ){
         console.log(error);
         return next( new apiError.InternalServerError() );

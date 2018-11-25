@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Side</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./client.js"></script>
+</head>
+<body style="padding: 20px">
+    <button class="btn btn-default" onclick="register()"> Register </button>
+    <button class="btn btn-default" onclick="login()"> Login </button>
+
+    <br/> <br/>
+
+    <button class="btn btn-default" onclick="findPlace('東海大廈')"> 東海大廈 </button>
+    <button class="btn btn-default" onclick="findPlace('青衣城')"> 青衣城 </button>
+    <button class="btn btn-default" onclick="findAddress()"> Get Address by lat lng </button>
+    <button class="btn btn-default" onclick="path()"> Get Path </button>
+
+    <br/>
+
+    <pre id="message" style="margin-top:20px"> </pre>
+</html>

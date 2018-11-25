@@ -18,7 +18,7 @@ const entry = ( req, res, next ) => {
 
 async function createDriver(req, res, next){
     
-    const { username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_no } = req.body;
+    const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_no } = req.body;
 
     const details = [];
     for ( const field of ['username', 'email', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_no'])
@@ -28,7 +28,13 @@ async function createDriver(req, res, next){
         return next( apiError.BadRequest(details));
 
     try {
-        const driver = await User.create({ username, email, telephone_no, vehicle_reg_no, taxi_driver_id_no  }, password );
+
+        let driver = await User.findOne({ email: email });
+
+        if ( driver )
+            return next( apiError.BadRequest(errors.UserExists()));
+
+        driver = await User.create({ type, username, email, telephone_no, vehicle_reg_no, taxi_driver_id_no  }, password );
         return login(req, res, next );
     } catch( error ){   
         debug(error);
@@ -39,17 +45,24 @@ async function createDriver(req, res, next){
 
 async function createUser(req, res, next){
 
-    const { username, email, telephone_no, password } = req.body;
+    const { type, username, email, telephone_no, password } = req.body;
 
     const details = [];
     for ( const field of ['username', 'email', 'telephone_no', 'password'])
         if ( req.body[field] === undefined)
             details.push( errors.MissingParameter( field ));
+
     if ( details.length > 0 )
         return next( apiError.BadRequest(details));
 
     try {
-        const user = await User.create({ username, email, telephone_no }, password );
+
+        let user = await User.findOne({ email: email });
+
+        if ( user )
+            return next( apiError.BadRequest(errors.UserExists()));
+
+        user = await User.create({ type, username, email, telephone_no }, password );
         return login(req, res, next );
     } catch( error ){   
         debug(error);

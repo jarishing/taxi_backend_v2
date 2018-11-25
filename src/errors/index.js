@@ -4,6 +4,8 @@ module.exports = exports = {
 
     ValidationError: require('./ValidationError.js'),
 
-    MissingParameter: require('./MissingParameter.js')
+    MissingParameter: require('./MissingParameter.js'),
 
-}
+    UserExists: require('./UserExists.js')
+
+};

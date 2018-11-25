@@ -10,6 +10,6 @@ router.route('/login')
     .post( userController.login );
 
 router.route('/')
-    .post( auth, userController.create );
+    .post( userController.create );
 
 module.exports = router;
