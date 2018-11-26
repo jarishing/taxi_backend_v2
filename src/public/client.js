@@ -137,13 +137,14 @@ async function createOrder(){
 
 /**
  * 
- * POST /api/order
+ * GET /api/order
  * 
  */
 async function getOrder(){
     try {
         const response = await axios.get('http://localhost:3100/api/order', 
             { 
+                params: { status: 'new' },
                 headers: { Authorization: 'Bearer ' + access_token }
             }
         );
@@ -154,6 +155,51 @@ async function getOrder(){
     };
 }
 
+
+/**
+ * 
+ * GET /api/order
+ * 
+ */
+async function getCommentOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                params: { status: 'accepted' },
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+/**
+ * 
+ * POST /api/order/comment
+ * 
+ */
+async function comment(){
+
+    const orderId = document.getElementById('orderNumber').value;
+    
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId + '/comment',  
+            { 
+                star: 4, comment: 'HELLO WORLD', type:'comment' 
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
 
 /**
  * 

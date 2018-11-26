@@ -17,7 +17,14 @@ const orderSchema = new mongoose.Schema({
     },
     
     orderBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    acceptBy: { type: Schema.Types.ObjectId, ref: "Driver" }
+    acceptBy: { type: Schema.Types.ObjectId, ref: "User" },
+
+    userComment : {
+        star: Number,
+        comment: String,
+        time: Date
+    }
+
 }, { timestamps: true });
 
 orderSchema.statics.create = function( orderDoc ){
@@ -32,6 +39,19 @@ orderSchema.statics.get = function( conditions ){
                 .lean();
 };
 
+orderSchema.methods.comment = function( star, comment ){
+    this.userComment = { star, comment, date: Date.now() };
+    this.status = 'commented';
+    return this.save();
+};
+
 const Order = mongoose.model("Order", orderSchema );
 
 module.exports = Order;
+
+/**
+ * 
+ * Update incomplete order into bad order when server restart
+ * 
+ */
+Order.update({ status:'new'}, { status: 'badOrder'}, { multi: true }).exec();

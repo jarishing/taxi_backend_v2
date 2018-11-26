@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Side</title>
+    <title>Client Side</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -26,7 +26,15 @@
 
     <br/><br/> 
     <button class="btn btn-default" onclick="getOrder()"> Get Order </button>
+    <button class="btn btn-default" onclick="getCommentOrder()"> Get Commentable Order </button>
     <button class="btn btn-default" onclick="createOrder()"> Create Order </button>
+
+    <br/><br/>
+
+    <div style="display:inline-flex; width:300px;">
+        <input class="form-control" style="margin-right:4px" placeholder="order number" id="orderNumber"/>
+        <button class="btn btn-default" onclick="comment()"> Comment </button>
+    </div>
 
     <pre id="message" style="margin-top:20px"> </pre>
 </html>

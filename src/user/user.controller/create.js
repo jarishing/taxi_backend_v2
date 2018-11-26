@@ -24,13 +24,14 @@ async function createDriver(req, res, next){
     for ( const field of ['username', 'email', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_no'])
         if ( req.body[field] === undefined)
             details.push( errors.MissingParameter( field ));
+        
     if ( details.length > 0 )
         return next( apiError.BadRequest(details));
 
     try {
 
         let driver = await User.findOne({ email: email });
-
+     
         if ( driver )
             return next( apiError.BadRequest(errors.UserExists()));
 

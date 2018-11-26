@@ -17,7 +17,7 @@ const entry = async( req, res, next) => {
         case 'accept':
             if ( req.user.type != 'driver')
                 return next( apiError.Forbidden(errors.ValidationError('Only driver can accept order')));   
-            if ( req.Order.type != 'new')
+            if ( req.order.status != 'new')
                 return next( apiError.Forbidden(errors.ValidationError('Already accepted')));   
             return accept( req, res, next );
 

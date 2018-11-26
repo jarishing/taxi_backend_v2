@@ -43,7 +43,7 @@ const App = function(){
         if ( error.name === 'UnauthorizedError')
             return next(apiError.Unauthorized());
         else 
-            return next();
+            return next(error);
     });
 
     app.use(apiError.catchError);

@@ -10,6 +10,8 @@ module.exports = exports = {
 
     list    : require('./list'),
 
+    comment : require('./comment.js'),
+
     load    : require('./load')
 
 };

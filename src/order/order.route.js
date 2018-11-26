@@ -7,6 +7,8 @@ router.route('/')
     .get( auth, orderController.list )
     .post( auth, orderController.create );
 
+router.post('/:orderId/comment', auth.user, orderController.comment );
+
 router.route('/:orderId')
     .get( auth, orderController.get )
     .post( auth, orderController.actions );
