@@ -35,7 +35,7 @@ const App = function(){
     // Catch the 404 error and pass it to the error handler
 
     app.use( (req, res, next ) => {
-        const error = new errors.NotFound();
+        const error = new apiError.NotFound();
         return next( error);
     });
 

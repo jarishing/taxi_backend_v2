@@ -4,7 +4,7 @@ const type = 'user',
       telephone_no =" 69381113",
       password = "123";
 
-let access_token = null;
+let access_token = null, user = null;
 
 /**
  * 
@@ -31,6 +31,7 @@ async function login(){
         const response = await axios.post('http://localhost:3100/api/user/login', { email, password });
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
+        user = response.data.user;
     } catch (error){
         console.error(error.data);
         return displayMessage(JSON.stringify(error, null, 4));
@@ -201,6 +202,32 @@ async function comment(){
     };
 }
 
+/**
+ * 
+ * Socket
+ * 
+ */
+const socket = io("http://localhost:3100");
+let socketInfo = {};
+socket.on("connect", function () {
+    console.log('has connected');
+    socketInfo.socketId = this.id;
+});
+
+function whatIsMe(){
+    socket.emit('what_is_me', access_token );
+};
+
+function renewLocation(){
+    const position = { "lat": 22.32338, "lng": 114.168784 };
+    socket.emit('renew_location', position );
+};
+
+
+
+
+
+ 
 /**
  * 
  * Helper function
