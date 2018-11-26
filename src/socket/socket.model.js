@@ -52,6 +52,8 @@ socketSchema.statics.broadCastDriver = async function( event, message ){
     for ( const user of users )
         if ( socketIo.sockets.connected[user.socketId] )
             socketIo.sockets.connected[user.socketId].emit( event, message );
+        else    
+            debug("Driver not found");
 };
 
 socketSchema.statics.broadCastDriverByDistance = async function( position, distance, event, message ){
@@ -71,6 +73,8 @@ socketSchema.statics.record = async function( socketId ){
 socketSchema.methods.emitSocket = function( event, message ){
     if ( socketIo.sockets.connected[this.socketId] )
         socketIo.sockets.connected[this.socketId].emit( event, message );
+    else   
+        debug('User not found')
 };
 
 socketSchema.statics.drop = async function( socketId ){
@@ -95,6 +99,9 @@ socketSchema.methods.whatIsMe = async function( access_token ){
 
 const Socket = mongoose.model( "Socket", socketSchema );
 
-module.exports = Socket;
+module.exports = exports = Socket;
+
+exports.type = require('./socket.type');
 
 Socket.find().remove().exec();
+

@@ -214,6 +214,9 @@ socket.on("connect", function () {
     socketInfo.socketId = this.id;
 });
 
+socket.on('action', data => 
+                console.log(data));
+                
 function whatIsMe(){
     socket.emit('what_is_me', access_token );
 };

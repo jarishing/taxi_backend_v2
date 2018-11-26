@@ -81,6 +81,31 @@ async function acceptOrder(){
 
 /**
  * 
+ * Socket
+ * 
+ */
+const socket = io("http://localhost:3100");
+let socketInfo = {};
+socket.on("connect", function () {
+    console.log('has connected');
+    socketInfo.socketId = this.id;
+});
+
+socket.on('action', data => 
+                console.log(data));
+
+function whatIsMe(){
+    socket.emit('what_is_me', access_token );
+};
+
+function renewLocation(){
+    const position = { "lat": 22.3592713, "lng": 114.1082266};
+    socket.emit('renew_location', position );
+};
+
+
+/**
+ * 
  * Helper function
  * 
  */

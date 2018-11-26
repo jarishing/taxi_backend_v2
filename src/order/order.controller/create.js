@@ -3,10 +3,10 @@ const Order    = require('../order.model'),
       debug    = require('debug')('Order'),
       apiError = require('server-api-errors'),
       errors   = require('../../errors'),
-      costCal  = require('../../utils/costCal');
+      costCal  = require('../../utils/costCal'),
+      Socket   = require('../../socket/socket.model.js');
 
 async function createOrder( req, res, next ){
-
 
     let { origin, destination, route, criteria } = req.body;
 
@@ -71,6 +71,8 @@ async function createOrder( req, res, next ){
             criteria : criteria,
             orderBy  : req.user._id  
         });
+
+        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
 
         return res.send({ data: order });
     } catch( error ){

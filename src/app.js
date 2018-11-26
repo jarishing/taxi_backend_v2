@@ -17,8 +17,8 @@ const App = function(){
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(require("helmet").noCache());
-    if ( process.env.NODE_ENV == "development")
-        app.use(require('morgan')('dev'));
+    // if ( process.env.NODE_ENV == "development")
+    //     app.use(require('morgan')('dev'));
     app.use(require('body-parser').json());
     app.use(require('body-parser').urlencoded({ extended: false }));
     app.use(require('cookie-parser')());

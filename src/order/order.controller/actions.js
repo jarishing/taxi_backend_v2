@@ -3,7 +3,8 @@
 const Order    = require('../order.model'),
       debug    = require('debug')('Order'),
       apiError = require('server-api-errors'),
-      errors   = require('../../errors');
+      errors   = require('../../errors'),
+      Socket   = require('../../socket/socket.model.js');
 
 const entry = async( req, res, next) => {
 
@@ -53,8 +54,13 @@ async function accept( req, res, next ){
         order.status = 'accepted';
         order.acceptBy = req.user._id;
         order = await order.save();
+
+        const socket = await Socket.findOne({ user: order.orderBy });
+        socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
+
         return res.json({ data: order });
     } catch ( error ){
+        console.log(error);
         return next( apiError.InternalServerError());   
     };
 
