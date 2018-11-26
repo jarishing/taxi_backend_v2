@@ -2,26 +2,19 @@
 
 const toRad = require('./toRad');
 
-function withinRange( origin, range, positions ){
+function withinRange( start, end, distance ){
 
-    let radLat = toRad( origin.lat ),radLng = toRad( origin.lng ), result = [];
+    let radLat = toRad( end.lat ),radLng = toRad( end.lng );
+    const itemLat = toRad(start.lat), itemLng = toRad(start.lng);
 
-    for ( const position of positions ){
+    const latDiff = radLat - itemLat, lngDiff = radLng - itemLng;
 
-        const itemLat = toRad(position.lat), itemLng = toRad(position.lng);
+    let target_distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(latDiff/2),2) + Math.cos(radLat) * Math.cos(radTargetLat)*Math.pow(Math.sin(lngDiff/2),2)));
+    target_distance = target_distance * 6378.137;
+    target_distance = Math.round( distance * 10000 ) / 10000;
 
-        const latDiff = radLat - itemLat,
-              lngDiff = radLng - itemLng;
+    return distance < target_distance;
 
-        let distance = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(latDiff/2),2) + Math.cos(radLat) * Math.cos(radTargetLat)*Math.pow(Math.sin(lngDiff/2),2)));
-        distance = distance * 6378.137;
-        distance = Math.round( distance * 10000 ) / 10000;
-
-        if( distance < range )
-            result.push( item );
-    };
-
-    return result;
 };
 
 module.exports = exports = withinRange;
