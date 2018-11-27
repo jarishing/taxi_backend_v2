@@ -54,4 +54,4 @@ module.exports = Order;
  * Update incomplete order into bad order when server restart
  * 
  */
-Order.update({ status:'new'}, { status: 'badOrder'}, { multi: true }).exec();
+Order.update({ status:'new'}, {status: 'badOrder'}, { multi: true }).exec();

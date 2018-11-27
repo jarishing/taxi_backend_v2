@@ -23,7 +23,6 @@ socketSchema.statics.connect = function( server ){
 
     socketIo.on('connection', async function( socket ){
 
-
         const socketId = socket.id;
 
         debug(socketId + ' has connected');

@@ -5,6 +5,8 @@ const jwt = require("express-jwt"),
       User = require('../user/user.model'),
       debug = require('debug')('Auth');
 
+
+
 async function getUser(req, res, next){
     try {
         const user = await User.findById( req.user._id );
