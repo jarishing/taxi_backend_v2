@@ -42,8 +42,13 @@ const autocomplete = async ( keyword ) => {
                         input: `香港,${keyword}`,
                         language: 'zh-TW'
                     }).asPromise();
-
+    
+                    
     result = result.json.predictions;
+
+    result = result.filter( item => item.place_id );
+
+    console.log(JSON.stringify(result, null, 4));
                 
     result = result.map( item => new Promise( async resolve => {
         let location = await placeIdToLatLng( item.place_id);

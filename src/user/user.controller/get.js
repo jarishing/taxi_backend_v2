@@ -7,9 +7,9 @@ async function get(req, res, next){
 
     try {
         const user = await User
-                        .findById(userId)
-                        .select('-__v -salt -hash')
-                        .lean();
+                                .findById(userId)
+                                .select('-__v -salt -hash')
+                                .lean();
         return res.send({ data: user });
     } catch( error ){
         debug(error)

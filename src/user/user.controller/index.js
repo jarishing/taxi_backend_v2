@@ -20,5 +20,7 @@ module.exports = exports = {
      */
     login: require('./login.js'),
 
+    list: require('./list'),
+
     load : require('./load')
 };

@@ -38,6 +38,20 @@ async function login(){
     };
 };
 
+async function getUser(){
+    try {
+        const response = await axios.get(
+            'http://localhost:3100/api/user/' + user._id , 
+        { 
+            headers: { Authorization: 'Bearer ' + access_token }
+        });
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
 // const start = '東海大廈', end = '青衣城';
 
 /**
@@ -191,6 +205,26 @@ async function comment(){
             { 
                 star: 4, comment: 'HELLO WORLD', type:'comment' 
             },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+/**
+ * 
+ * GET /api/user
+ * 
+ */
+async function list(){
+    
+    try {
+        const response = await axios.get('http://localhost:3100/api/user',
             { 
                 headers: { Authorization: 'Bearer ' + access_token }
             }

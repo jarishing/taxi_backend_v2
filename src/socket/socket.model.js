@@ -4,7 +4,8 @@ const mongoose = require("mongoose"),
       SocketIO = require('socket.io'),
       withinRange = require('../utils/withinRange'),
       debug = require('debug')('Socket'),
-      jwt = require('jsonwebtoken');
+      jwt = require('jsonwebtoken'),
+      Order = require('../order/order.model');
 
 let socketIo;
 
@@ -78,22 +79,32 @@ socketSchema.methods.emitSocket = function( event, message ){
 
 socketSchema.statics.drop = async function( socketId ){
     debug( socketId + ' has disconnected');
+
+    const socket = await this.findOne({ socketId });
+    
+    if ( socket )
+        await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
+
     await this.find({ socketId }).remove().exec();
 };
 
 socketSchema.methods.updateLocation = async function( position ){
-    this.position = position;
-    await this.save();   
-    debug(this);
+
+    debug("UPDATE LOCATION")
+
+    const updated = await Socket.findOneAndUpdate({ socketId: this.socketId }, { position: position }, { upsert: true, new: true }).exec();
+    // debug(this);
 };
 
 socketSchema.methods.whatIsMe = async function( access_token ){
+
+    debug("WHAT IS ME ");
+
     const doc = jwt.verify(access_token, process.env.SECRET_KEY);
-    await Socket.find({ user: doc._id }).remove().exec();
-    this.user = doc._id;
-    this.type = doc.type;
-    await this.save();   
-    debug(this);
+
+    const updated = await Socket.findOneAndUpdate({ socketId: this.socketId }, { user: doc._id, type: doc.type }, { upsert: true, new: true }).exec();
+
+    // debug(updated);
 };
 
 const Socket = mongoose.model( "Socket", socketSchema );
