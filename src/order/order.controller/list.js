@@ -1,11 +1,14 @@
 const Order    = require('../order.model'),
+      SocketModel = require('../../socket/socket.model'),
       debug    = require('debug')('Order'),
       apiError = require('server-api-errors'),
+      withinRange = require('../../utils/withinRange'),
       errors   = require('../../errors');
 
 async function getOrders( req, res, next ){
 
     const condition = {};
+    let position;
 
     switch(req.query.status){
 
@@ -29,15 +32,30 @@ async function getOrders( req, res, next ){
         case 'new':
         default:
             condition.status = 'new';
+            if( req.user.type !== 'driver' )
+                return next( apiError.BadRequest());
+            position = await SocketModel.findOne({user: req.user._id});
+            position = position.position;
             break;
     };
 
     try {
 
-        const orders = await Order
+        let orders = await Order
                                 .find(condition)
                                 .populate('orderBy acceptBy')
                                 .lean();
+        
+                
+        //filter
+        if( condition.status == 'new' && orders ){
+            orders = orders.filter( item =>
+                withinRange( 
+                    {lat: item.start.lat, lng: item.start.lng },
+                    position, 3
+                )
+            );
+        };
 
         return res.json({ data: orders, count: orders.length });
     } catch( error ){

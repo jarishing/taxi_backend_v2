@@ -10,4 +10,6 @@ router.use('/place', require('./place/place.route'));
 
 router.use('/order', require('./order/order.route'));
 
+router.use('/analysis', require('./analysis/analysis.route'));
+
 module.exports = router;

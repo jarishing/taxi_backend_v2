@@ -11,16 +11,19 @@ placeSchema.statics.getAddress = async function( lat, lng ){
 
     let locationList = await this.findOne({ 'result.location.lat': lat, 'result.location.lng': lng });
 
-    let address;
+    let address,offset;
 
     locationList.result.forEach( (item) => {
-        if( item.location.lat == lat && item.location.lng == lng )
+        if( item.location.lat == lat && item.location.lng == lng ){
             address = item.address;
+            offset = item.offset;
+        }
     });
 
     address = address? address: locationList.result[0].address;
+    offset = offset? offset: locationList.result[0].offset;
 
-    return { address: address, lat: lat, lng: lng };
+    return { address: address, lat: lat, lng: lng, offset: offset };
 };
 
 const Place = mongoose.model( "Place", placeSchema );

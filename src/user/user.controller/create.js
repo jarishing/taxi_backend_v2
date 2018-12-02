@@ -7,12 +7,38 @@ const User = require('../user.model'),
 const entry = ( req, res, next ) => {
 
     switch( req.body.type ){
+        case 'admin':
+            return createAdmin(req, res, next);
         case 'driver':
             return createDriver(req, res, next);
         case 'user': 
             return createUser(req, res, next);
         default:
             return next( apiError.BadRequest( errors.MissingParameter("type")));
+    }
+};
+
+let setupIsDone = false;
+
+async function createAdmin(req, res, next){
+
+    if( setupIsDone )
+        return next( apiError.BadRequest(errors.UserExists()));
+    
+    try{
+        let admin = new User({
+            type        : 'admin',
+            username    : 'admin',
+            email       : 'admin@admin.com'
+        });
+
+        admin.setPassword('123456');
+        admin = await admin.save();
+        setupIsDone = true;
+        return login(req, res, next );
+    } catch( error ){
+        debug(error);
+        return next( apiError.InternalServerError());
     }
 };
 

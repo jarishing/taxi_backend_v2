@@ -8,7 +8,6 @@ const Place    = require('./place.model'),
       Google   = require('../utils/googleService');
 
 async function find( req, res, next ){
-
     const keyword = req.query.keyword;
 
     if ( keyword === undefined || keyword === "" )
@@ -24,11 +23,19 @@ async function find( req, res, next ){
         let result = [];
 
         for( const item of data){
+            let offset = [];
+
+            if(item.terms){
+                item.terms.map( location =>(
+                    offset.push(location.value)
+                ));
+            };
             let location = {
                 address     : item.description,
                 location    : item.geometry.location,
                 placeId     : item.place_id,
-                description : item.description
+                description : item.description,
+                offset      : offset
             };
             result.push(location);
         };

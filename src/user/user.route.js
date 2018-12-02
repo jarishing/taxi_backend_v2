@@ -3,7 +3,9 @@ const userController = require('./user.controller');
 const router = express.Router();
 const auth = require('../utils/auth.js');
 
-router.use('/:userId/order', require('../user.order/user.order.route'));
+router.use('/order', require('../user.order/user.order.route'));
+router.use('/comment', require('../user.comment/user.comment.route'));
+router.use('/ban', require('../user.ban/user.ban.route'));
 
 router.route('/login')
     // login route

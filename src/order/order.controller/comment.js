@@ -1,10 +1,12 @@
 "use strict";
 
-const Order    = require('../order.model'),
-      debug    = require('debug')('Order'),
-      apiError = require('server-api-errors'),
-      errors   = require('../../errors');
+const Order         = require('../order.model'),
+      driverEvalute = require('../../utils/driverEvalute'),
+      debug         = require('debug')('Order'),
+      apiError      = require('server-api-errors'),
+      errors        = require('../../errors');
 
+//driver grade
 async function comment( req, res, next ) {
     
     const { star, comment } = req.body;
@@ -19,6 +21,7 @@ async function comment( req, res, next ) {
 
     try {
         order = await order.comment(star, comment);
+        driverEvalute( order.acceptBy, star );
         return res.json(order);
     } catch ( error ){
         console.error(error);

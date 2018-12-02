@@ -99,7 +99,7 @@ function whatIsMe(){
 };
 
 function renewLocation(){
-    const position = { "lat": 22.3592713, "lng": 114.1082266};
+    const position = { "lat": 22.334518, "lng": 114.157452};
     socket.emit('renew_location', position );
 };
 

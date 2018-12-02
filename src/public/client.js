@@ -1,8 +1,14 @@
+// const type = 'user',
+//       username = "ken",
+//       email = "ken@live.hk",
+//       telephone_no =" 69381113",
+//       password = "123";
+
 const type = 'user',
-      username = "ken",
-      email = "ken@live.hk",
-      telephone_no =" 69381113",
-      password = "123";
+      username = "jari",
+      email = "jari@live.hk",
+      telephone_no =" 67676767",
+      password = "456";
 
 let access_token = null, user = null;
 
@@ -63,6 +69,9 @@ async function findPlace(place){
 const start = { "lat": 22.32338, "lng": 114.168784 },
       end = { "lat": 22.3592713, "lng": 114.1082266 };
 
+const startOther = { "lat": 22.3160575 , "lng": 114.1703633 },
+      endOther = { "lat": 22.280684, "lng": 114.173457 }
+
 /**
  * 
  * GET /api/place/address
@@ -121,6 +130,29 @@ async function createOrder(){
                 criteria: {
                     taxiType: 'red', 
                     discount: 100,
+                    tunnel: 'any',
+                    passenger: 4
+                }
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+async function createOrderOther(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/order', 
+            {
+                origin: startOther, destination: endOther,
+                criteria: {
+                    taxiType: 'red', 
+                    discount: 85,
                     tunnel: 'any',
                     passenger: 4
                 }

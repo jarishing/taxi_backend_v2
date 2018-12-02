@@ -3,6 +3,6 @@ const express = require('express'),
       router = express.Router(),
       auth = require('../utils/auth.js');
 
-router.get('/', auth, userOrderController.get );
+router.get('/:userId', auth, userOrderController.get );
 
 module.exports = router;
