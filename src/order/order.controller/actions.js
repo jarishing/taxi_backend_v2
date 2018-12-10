@@ -88,6 +88,13 @@ async function cancelByUser( req, res, next ){
         let order = req.order;
         order.status = 'canceled';
         order = await order.save();
+
+        if ( order._doc.acceptBy ){
+            const socket = await Socket.findOne({ user: order._doc.acceptBy });
+            if ( socket )
+                socket.emitSocket('action', 'USER_CANCEL' );
+        };
+        
         return res.json({ data: order });
     } catch ( error ){
         return next( apiError.InternalServerError());   
@@ -95,16 +102,16 @@ async function cancelByUser( req, res, next ){
 
 };
 
-async function cancelByDriver( req, res, next ){
-    try{
-        let order = req.order;
-        order.status = 'canceled';
-        order = await order.save();
-        return res.json({ data: order });
-    } catch ( error ){
-        return next( apiError.InternalServerError());   
-    };
-}
+// async function cancelByDriver( req, res, next ){
+//     try{
+//         let order = req.order;
+//         order.status = 'canceled';
+//         order = await order.save();
+//         return res.json({ data: order });
+//     } catch ( error ){
+//         return next( apiError.InternalServerError());   
+//     };
+// }
 
 async function release( req, res, next ){
     

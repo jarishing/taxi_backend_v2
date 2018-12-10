@@ -35,7 +35,7 @@ socketSchema.statics.connect = function( server ){
         
         socket.on('renew_location', position => client.updateLocation(position) );
 
-        socket.on('disconnect', _ => _this.drop(socketId) );
+        socket.on('disconnect', _ => _this.drop(socketId))
 
     });
 };
@@ -71,10 +71,11 @@ socketSchema.statics.record = async function( socketId ){
 };
 
 socketSchema.methods.emitSocket = function( event, message ){
-    if ( socketIo.sockets.connected[this.socketId] )
+    if ( socketIo.sockets.connected[this.socketId] ){
         socketIo.sockets.connected[this.socketId].emit( event, message );
-    else   
-        debug('User not found')
+        console.log(`emit event ${event} with message ${message} with ${this.socketId}`);
+    } else   
+        console.log('User not found')
 };
 
 socketSchema.statics.drop = async function( socketId ){
@@ -82,10 +83,13 @@ socketSchema.statics.drop = async function( socketId ){
 
     const socket = await this.findOne({ socketId });
     
-    if ( socket )
+    if ( socket ){
         await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
+    }
 
     await this.find({ socketId }).remove().exec();
+
+    this.broadCastDriver('action', 'NEW_ORDER');
 };
 
 socketSchema.methods.updateLocation = async function( position ){

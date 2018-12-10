@@ -17,6 +17,8 @@ router.route('/')
 
 router.get('/:userId', auth, userController.get );
 
+router.patch('/:userId', auth, userController.update );
+
 router.param('userId', userController.load );
 
 module.exports = router;
