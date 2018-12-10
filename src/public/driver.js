@@ -120,11 +120,7 @@ function whatIsMe(){
 };
 
 function renewLocation(){
-<<<<<<< HEAD
     const position = { "lat": 22.334518, "lng": 114.157452};
-=======
-    const position = { "lat": 22.3198502, "lng": 114.1706419 };
->>>>>>> origin
     socket.emit('renew_location', position );
 };
 
