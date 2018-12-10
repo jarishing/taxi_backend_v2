@@ -15,3 +15,10 @@ exports.NEW_ORDER = 'NEW_ORDER';
  * 
  */
 exports.DRIVER_ACCEPT = 'DRIVER_ACCEPT';
+
+/**
+ * 
+ * user has cancel the order
+ * 
+ */
+exports.USER_CANCEL = 'USER_CANCEL';

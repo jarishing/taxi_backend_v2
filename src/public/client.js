@@ -218,6 +218,33 @@ async function comment(){
 
 /**
  * 
+ * POST /api/order/:orderId 
+ * 
+ */
+async function cancelOrder(){
+
+    const orderId = document.getElementById('orderNumber').value;
+    
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId,
+            { 
+                type:'cancel' 
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+
+
+/**
+ * 
  * GET /api/user
  * 
  */

@@ -71,10 +71,11 @@ socketSchema.statics.record = async function( socketId ){
 };
 
 socketSchema.methods.emitSocket = function( event, message ){
-    if ( socketIo.sockets.connected[this.socketId] )
+    if ( socketIo.sockets.connected[this.socketId] ){
         socketIo.sockets.connected[this.socketId].emit( event, message );
-    else   
-        debug('User not found')
+        console.log(`emit event ${event} with message ${message} with ${this.socketId}`);
+    } else   
+        console.log('User not found')
 };
 
 socketSchema.statics.drop = async function( socketId ){
