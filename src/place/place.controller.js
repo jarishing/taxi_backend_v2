@@ -20,6 +20,7 @@ async function find( req, res, next ){
 
     try{
         data = await Google.autocomplete( keyword );
+
         let result = [];
 
         for( const item of data){

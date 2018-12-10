@@ -28,9 +28,11 @@ const entry = async( req, res, next) => {
          * 
          */
         case 'cancel':
-            if ( req.user.type != 'client')
+            if ( req.user.type != 'user')
                 return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));   
-            return cancel( req, res, next );
+            return cancelByUser( req, res, next );
+            // if ( req.user.type == 'driver')
+            //     return cancelByDriver( req, res, next );
 
         /**
          * 
@@ -63,7 +65,20 @@ async function accept( req, res, next ){
         order.acceptBy = req.user._id;
         order = await order.save();
 
+<<<<<<< HEAD
         return res.json({ data: order });
+=======
+        const socket = await Socket.findOne({ user: order.orderBy });
+
+        if ( socket ){
+            socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
+            return res.json({ status: 1, data: order });
+        } else {
+            await Order.update({ order: order._id }, { status: 'badOrder'} );
+            return res.json({ status: 0 });
+        };
+                    
+>>>>>>> origin
     } catch ( error ){
         console.log(error);
         return next( apiError.InternalServerError());   
@@ -71,8 +86,13 @@ async function accept( req, res, next ){
 
 };
 
+<<<<<<< HEAD
 //cancel call by soc
 async function cancel( req, res, next ){
+=======
+async function cancelByUser( req, res, next ){
+    
+>>>>>>> origin
     try{
         let order = req.order;
         order.status = 'canceled';
@@ -83,6 +103,17 @@ async function cancel( req, res, next ){
     };
 
 };
+
+async function cancelByDriver( req, res, next ){
+    try{
+        let order = req.order;
+        order.status = 'canceled';
+        order = await order.save();
+        return res.json({ data: order });
+    } catch ( error ){
+        return next( apiError.InternalServerError());   
+    };
+}
 
 async function release( req, res, next ){
     

@@ -20,7 +20,13 @@ module.exports = exports = {
      */
     login: require('./login.js'),
 
+<<<<<<< HEAD
     load : require('./load'),
 
     list : require('./list.js')
+=======
+    list: require('./list'),
+
+    load : require('./load')
+>>>>>>> origin
 };

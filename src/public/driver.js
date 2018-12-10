@@ -81,6 +81,27 @@ async function acceptOrder(){
 
 /**
  * 
+ * GET /api/user
+ * 
+ */
+async function list(){
+    
+    try {
+        const response = await axios.get('http://localhost:3100/api/user',
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+
+/**
+ * 
  * Socket
  * 
  */
@@ -99,9 +120,15 @@ function whatIsMe(){
 };
 
 function renewLocation(){
+<<<<<<< HEAD
     const position = { "lat": 22.334518, "lng": 114.157452};
+=======
+    const position = { "lat": 22.3198502, "lng": 114.1706419 };
+>>>>>>> origin
     socket.emit('renew_location', position );
 };
+
+
 
 
 /**
