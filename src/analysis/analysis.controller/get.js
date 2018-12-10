@@ -4,6 +4,7 @@ const Analysis = require('../analysis.model'),
       Order    = require('../../order/order.model'),
       SocketMd = require('../../socket/socket.model'),
       debug    = require('debug')('Analysis'),
+      errors   = require('../../errors'),
       apiError = require('server-api-errors');
 
 const entry = async( req, res, next ) => {
@@ -26,11 +27,22 @@ async function main( req, res, next ){
         
         [ activeUser, activeDriver, ordering, analysisData ] = await Promise.all([ activeUser, activeDriver, ordering, analysisData ]);
 
+        let popularStart = analysisData.startData.sort(function (a, b) { return -( a.times - b.times); }),
+            popularEnd = analysisData.endData.sort(function (a, b) { return -( a.times - b.times); }),
+            popularTime = analysisData.timeData.sort(function (a, b) { return -( a.times - b.times); });
+        
+        let simpleAnalysisData = {
+            mostPopularStart: popularStart[0]? popularStart[0]:null,
+            mostPopularEnd: popularEnd[0]? popularEnd[0]:null,
+            averageDistance: analysisData.averageDistance,
+            mostPopularTime: popularTime[0]? popularTime[0]:null
+        }
+
         const data = {
             activeUser: activeUser,
             activeDriver: activeDriver,
             ordering: ordering,
-            analysisData: analysisData
+            analysisData: simpleAnalysisData
         };
 
         return res.send({ data: data });

@@ -12,6 +12,7 @@ router.route('/login')
     .post( userController.login );
 
 router.route('/')
+    .get( userController.list )
     .post( userController.create );
 
 router.get('/:userId', auth, userController.get );

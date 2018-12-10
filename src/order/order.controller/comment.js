@@ -6,7 +6,6 @@ const Order         = require('../order.model'),
       apiError      = require('server-api-errors'),
       errors        = require('../../errors');
 
-//driver grade
 async function comment( req, res, next ) {
     
     const { star, comment } = req.body;

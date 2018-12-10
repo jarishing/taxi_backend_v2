@@ -21,10 +21,18 @@ async function admin( req, res, next ){
     const conditions = { $and:[ { $or:[ { orderBy: req.params.userId }, { acceptBy: req.params.userId } ] } , { status: 'commented' } ] };
 
     try{
-        const orders = await Order.find(conditions).lean();
+        const orders = await Order
+                                .find(conditions)
+                                .populate('orderBy')
+                                .lean();
+
         if(orders.length > 0){
             orders.map( item => {
-                data.push( item.userComment );
+                data.push({ 
+                    comment: item.userComment,
+                    orderId: item._id,
+                    orderBy: item.orderBy.username
+                });
             });
         };
 
