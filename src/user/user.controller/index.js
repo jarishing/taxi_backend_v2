@@ -22,5 +22,7 @@ module.exports = exports = {
 
     list: require('./list'),
 
-    load : require('./load')
+    load : require('./load'),
+
+    update: require('./update')
 };

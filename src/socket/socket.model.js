@@ -35,7 +35,7 @@ socketSchema.statics.connect = function( server ){
         
         socket.on('renew_location', position => client.updateLocation(position) );
 
-        socket.on('disconnect', _ => _this.drop(socketId) );
+        socket.on('disconnect', _ => _this.drop(socketId))
 
     });
 };
@@ -82,10 +82,13 @@ socketSchema.statics.drop = async function( socketId ){
 
     const socket = await this.findOne({ socketId });
     
-    if ( socket )
+    if ( socket ){
         await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
+    }
 
     await this.find({ socketId }).remove().exec();
+
+    this.broadCastDriver('action', 'NEW_ORDER');
 };
 
 socketSchema.methods.updateLocation = async function( position ){

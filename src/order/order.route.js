@@ -10,7 +10,7 @@ router.route('/')
 router.post('/:orderId/comment', auth.user, orderController.comment );
 
 router.route('/:orderId')
-    .get( auth, orderController.get )
+    .get(  orderController.get )
     .post( auth, orderController.actions );
 
 router.param('orderId', orderController.load );
