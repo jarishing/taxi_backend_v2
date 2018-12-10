@@ -54,7 +54,7 @@ async function accept( req, res, next ){
     try{
         let order = req.order;
         
-        const socket = await Socket.findOne({ user: order.orderBy });
+        let socket = await Socket.findOne({ user: order.orderBy });
 
         if(!socket)
             return next( apiError.InternalServerError('orderer is offline'));
@@ -65,10 +65,7 @@ async function accept( req, res, next ){
         order.acceptBy = req.user._id;
         order = await order.save();
 
-<<<<<<< HEAD
-        return res.json({ data: order });
-=======
-        const socket = await Socket.findOne({ user: order.orderBy });
+        socket = await Socket.findOne({ user: order.orderBy });
 
         if ( socket ){
             socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
@@ -78,7 +75,6 @@ async function accept( req, res, next ){
             return res.json({ status: 0 });
         };
                     
->>>>>>> origin
     } catch ( error ){
         console.log(error);
         return next( apiError.InternalServerError());   
@@ -86,13 +82,8 @@ async function accept( req, res, next ){
 
 };
 
-<<<<<<< HEAD
-//cancel call by soc
-async function cancel( req, res, next ){
-=======
 async function cancelByUser( req, res, next ){
     
->>>>>>> origin
     try{
         let order = req.order;
         order.status = 'canceled';

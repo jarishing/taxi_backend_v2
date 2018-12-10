@@ -45,15 +45,11 @@ const autocomplete = async ( keyword ) => {
     
                     
     result = result.json.predictions;
-<<<<<<< HEAD
-            
-=======
 
     result = result.filter( item => item.place_id );
 
     console.log(JSON.stringify(result, null, 4));
                 
->>>>>>> origin
     result = result.map( item => new Promise( async resolve => {
         let location = await placeIdToLatLng( item.place_id);
         item['geometry'] = {location};
