@@ -28,9 +28,9 @@ const entry = async( req, res, next) => {
          * 
          */
         case 'cancel':
-            if ( req.user.type != 'user')
-                return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));   
-            return cancelByUser( req, res, next );
+            if ( req.user.type == 'user' || req.user.type == 'driver' )
+                return cancelByUser( req, res, next );
+            return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));   
             // if ( req.user.type == 'driver')
             //     return cancelByDriver( req, res, next );
 
@@ -102,16 +102,21 @@ async function cancelByUser( req, res, next ){
 
 };
 
-// async function cancelByDriver( req, res, next ){
-//     try{
-//         let order = req.order;
-//         order.status = 'canceled';
-//         order = await order.save();
-//         return res.json({ data: order });
-//     } catch ( error ){
-//         return next( apiError.InternalServerError());   
-//     };
-// }
+async function cancelByDriver( req, res, next ){
+    try{
+        let order = req.order;
+        order.status = 'canceled';
+        order = await order.save();
+
+        if( order._doc.acceptBy ){
+            
+        };
+
+        return res.json({ data: order });
+    } catch ( error ){
+        return next( apiError.InternalServerError());   
+    };
+}
 
 async function release( req, res, next ){
     

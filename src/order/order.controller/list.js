@@ -83,7 +83,9 @@ async function driverGetNewOrder( req, res, next ){
 
     // [ socket, driver ] = await Promise.all([ position, driver ]);
 
-    position = socket.position;
+    if( socket )
+        position = socket.position;
+    
     const condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
     // let time = new Date();
 
@@ -118,12 +120,14 @@ async function driverGetNewOrder( req, res, next ){
                                     .limit(30)
                                     .lean();
 
-        orders = orders.filter( item =>
-            withinRange( 
-                {lat: item.start.lat, lng: item.start.lng },
-                position, 3
-            )
-        );
+        if( socket ){
+            orders = orders.filter( item =>
+                withinRange( 
+                    {lat: item.start.lat, lng: item.start.lng },
+                    position, 3
+                )
+            );
+        };
 
         return res.json({ data: orders, count: orders.length });
 
