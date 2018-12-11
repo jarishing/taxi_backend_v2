@@ -1,7 +1,8 @@
 const express = require('express'),
       debug   = require('debug')('Server'),
       passport = require("passport"),
-      apiError = require('server-api-errors');
+      apiError = require('server-api-errors'),
+      path = require('path');
 
 const App = function(){
     
@@ -24,10 +25,11 @@ const App = function(){
     app.use(require('cookie-parser')());
     app.use(require('cors')());
 
-    if( process.env.NODE_ENV === 'development')
-        app.use(express.static(__dirname + '/public'));
-    else 
-        app.use(express.static(__dirname + '/build'));
+    // if( process.env.NODE_ENV === 'development')
+        // app.use(express.static(__dirname + '/public'));
+
+    app.use(express.static(path.join(__dirname, 'build')));
+
     /**
      * 
      * Mount Routes
@@ -36,6 +38,11 @@ const App = function(){
     app.use("/api", require('./index.route'));
     // Catch the 404 error and pass it to the error handler
 
+    app.get('*', function (req, res) {
+        res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    });
+
+    
     app.use( (req, res, next ) => {
         const error = new apiError.NotFound();
         return next( error);
