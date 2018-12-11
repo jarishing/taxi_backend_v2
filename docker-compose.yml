@@ -1,19 +1,19 @@
 version: '2'
 services:
 
-  server-starter:
+  taxi_backend:
     build: ./src
     restart: always
     environment:
       - NODE_ENV=production
-      - MONGODB=mongodb://mongodb/server-starter
+      - MONGODB=mongodb://mongodb/taxi_backend
       - PORT=3100
       - DIGEST_NAME=sha256
       - SECRET_KEY=SERVER_STARTER
-    ports:
-        - 3100:3100
+    expose:
+      - 8084
     links:
-        - mongodb
+      - mongodb
 
   mongodb:
     image: mongo:latest
