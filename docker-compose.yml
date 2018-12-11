@@ -4,6 +4,7 @@ services:
   taxi_backend:
     build: ./
     restart: always
+    command: node index.js
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://mongodb/taxi_backend
