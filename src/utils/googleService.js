@@ -72,13 +72,13 @@ const directSearch = async ( keyword ) => {
 
     if(result.length > 0){
         result = {
-            address: result[0].formatted_address,
+            address: keyword,
             lat: result[0].geometry.location.lat,
             lng: result[0].geometry.location.lng,
             offset: []
         }
     };
-    
+
     return result;
 };
 

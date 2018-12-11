@@ -67,13 +67,16 @@ async function accept( req, res, next ){
 
         socket = await Socket.findOne({ user: order.orderBy });
 
+
         if ( socket ){
             socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
+            Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
             return res.json({ status: 1, data: order });
         } else {
             await Order.update({ order: order._id }, { status: 'badOrder'} );
             return res.json({ status: 0 });
         };
+
                     
     } catch ( error ){
         console.log(error);
@@ -94,6 +97,8 @@ async function cancelByUser( req, res, next ){
             if ( socket )
                 socket.emitSocket('action', 'USER_CANCEL' );
         };
+
+        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
         
         return res.json({ data: order });
     } catch ( error ){
@@ -102,21 +107,21 @@ async function cancelByUser( req, res, next ){
 
 };
 
-async function cancelByDriver( req, res, next ){
-    try{
-        let order = req.order;
-        order.status = 'canceled';
-        order = await order.save();
+// async function cancelByDriver( req, res, next ){
+//     try{
+//         let order = req.order;
+//         order.status = 'canceled';
+//         order = await order.save();
 
-        if( order._doc.acceptBy ){
+//         if( order._doc.acceptBy ){
             
-        };
+//         };
 
-        return res.json({ data: order });
-    } catch ( error ){
-        return next( apiError.InternalServerError());   
-    };
-}
+//         return res.json({ data: order });
+//     } catch ( error ){
+//         return next( apiError.InternalServerError());   
+//     };
+// }
 
 async function release( req, res, next ){
     
@@ -125,6 +130,13 @@ async function release( req, res, next ){
         order.status = 'new';
         order.acceptBy = null;
         order = await order.save();
+
+        socket = await Socket.findOne({ user: order.orderBy });
+
+        if( socket )
+            socket.emitSocket('action', 'DRIVER_RELEASE' );
+        
+        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
         return res.json({ data: order });
     } catch ( error ){
         return next( apiError.InternalServerError());   
