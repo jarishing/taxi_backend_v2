@@ -31,7 +31,7 @@ async function createOrder( req, res, next ){
     if( criteria.tunnel != "any" && criteria.tunnel != "HungHomTunnel" && criteria.tunnel != "eastTunnel" && criteria.tunnel != "westTunnel" )
         return next( apiError.BadRequest( errors.ValidationError("Invalid tunnel type", 'tunnel')));
     
-    if( criteria.discount !== 85 && criteria.discount !== 85 && criteria.discount !== 100 )
+    if( criteria.discount !== 85 && criteria.discount !== 90 && criteria.discount !== 100 )
         return next( apiError.BadRequest( errors.ValidationError("Invalid discount type", 'discount')));
 
     switch( criteria.routeStop ){
@@ -111,7 +111,7 @@ async function driverCreateOrder( req, res, next ){
     if( criteria.tunnel != "any" && criteria.tunnel != "HungHomTunnel" && criteria.tunnel != "eastTunnel" && criteria.tunnel != "westTunnel" )
         return next( apiError.BadRequest( errors.ValidationError("Invalid tunnel type", 'tunnel')));
 
-    if( criteria.discount !== 85 && criteria.discount !== 85 && criteria.discount !== 100 )
+    if( criteria.discount !== 85 && criteria.discount !== 90 && criteria.discount !== 100 )
         return next( apiError.BadRequest( errors.ValidationError("Invalid discount type", 'discount')));
 
     origin = directSearch( origin );
