@@ -87,6 +87,13 @@ async function cancelByUser( req, res, next ){
     
     try{
         let order = req.order;
+        let time = new Date();
+
+        time.setMinutes(time.getMinutes()-5);
+
+        if(order.createdAt - time > 0 && order.status ==  'accept' )
+            return next( apiError.BadRequest('order cannot cancel after 5 min'));
+
         order.status = 'canceled';
         order = await order.save();
 
