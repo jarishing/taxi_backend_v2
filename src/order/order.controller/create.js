@@ -87,9 +87,9 @@ async function createOrder( req, res, next ){
             orderBy  : req.user._id  
         });
 
-        // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
+        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
 
-        broadcastWithGrade( );
+        // broadcastWithGrade( );
 
         return res.send({ data: order });
     } catch( error ){
@@ -145,9 +145,9 @@ async function driverCreateOrder( req, res, next ){
             orderBy  : req.user._id  
         });
 
-        // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
+        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
 
-        broadcastWithGrade( );
+        // broadcastWithGrade( );
 
         return res.send({ data: order });
     } catch( error ){
