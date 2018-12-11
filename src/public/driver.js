@@ -39,6 +39,47 @@ async function login(){
     };
 };
 
+async function loginOther(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/user/login', { email:'john@john.hk', password: '456' });
+        displayMessage(JSON.stringify(response.data, null, 4));
+        access_token = response.data.access_token;
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+};
+
+/**
+ * 
+ * POST /api/order
+ * 
+ */
+
+async function makeOrder(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/order', 
+            {
+                origin: "東海大廈", destination: "仁賢大廈",
+                criteria: {
+                    taxiType: 'green', 
+                    discount: 100,
+                    tunnel: 'any',
+                    passenger: 5
+                }
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+
 /**
  * 
  * POST /api/order
@@ -87,7 +128,7 @@ async function acceptOrder(){
 async function list(){
     
     try {
-        const response = await axios.get('http://localhost:3100/api/user',
+        const response = await axios.get('http://localhost:3100/api/user/',
             { 
                 headers: { Authorization: 'Bearer ' + access_token }
             }

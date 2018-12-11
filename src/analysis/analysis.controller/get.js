@@ -55,7 +55,77 @@ async function main( req, res, next ){
 async function data( req, res, next ) {
     try{
         let result = await Analysis.findOne().sort({createdAt: -1});
-        return res.send({ data: result });
+        let start = result.startData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5),
+            end = result.endData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5),
+            discount = result.discountData.sort(function (a, b) { return -( a.times - b.times); }),
+            time = result.timeData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5);
+
+        let startLabel = [],
+            startData = [],
+            endLabel = [],
+            endData = [],
+            discountLabel = [],
+            discountData = [],
+            timeLabel = [],
+            timeData = [];
+
+        console.log( discount );
+
+        start = start.map( item => {
+            startLabel.push( item.district );
+            startData.push( item.times );
+        });
+
+        end = end.map( item => {
+            endLabel.push( item.district );
+            endData.push( item.times );
+        });
+
+        discount = discount.map( item => {
+            discountLabel.push( item.discount );
+            discountData.push( item.times );
+        });
+
+        time = time.map( item => {
+            timeLabel.push( item.timeRange );
+            timeData.push( item.times );
+        });
+
+        await Promise.all([ start, end, discount, time ]);
+
+        // console.log("===================");
+        // console.log(startLabel);
+        // console.log(startData);
+        // console.log("===================");
+        // console.log(endLabel);
+        // console.log(endData);
+        // console.log("===================");
+        // console.log(discountLabel);
+        // console.log(discountData);
+        // console.log("===================");
+        // console.log(timeLabel);
+        // console.log(timeData);
+
+        const data = {
+            start: {
+                startLabel: startLabel,
+                startData: startData
+            },
+            end: {
+                endLabel: endLabel,
+                endData: endData
+            },
+            discount: {
+                discountLabel: discountLabel,
+                discountData: discountData
+            },
+            time: {
+                timeLabel: timeLabel,
+                timeData: timeData
+            }
+        }
+
+        return res.send({ data });
     } catch( error ){
         console.log( error );
         return next( apiError.InternalServerError() );

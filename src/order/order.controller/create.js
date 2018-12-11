@@ -4,7 +4,19 @@ const Order    = require('../order.model'),
       apiError = require('server-api-errors'),
       errors   = require('../../errors'),
       costCal  = require('../../utils/costCal'),
+      { directSearch } = require('../../utils/googleService'),
       Socket   = require('../../socket/socket.model.js');
+
+const entry = async( req, res, next ) => {
+    switch( req.user.type ){
+        case 'user':
+            return createOrder( req, res, next );
+        case 'driver':
+            return driverCreateOrder( req, res, next );
+        default:
+            return next( apiError.BadRequest( errors.MissingParameter("type")));
+    }
+}
 
 async function createOrder( req, res, next ){
 
@@ -75,7 +87,9 @@ async function createOrder( req, res, next ){
             orderBy  : req.user._id  
         });
 
-        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
+        // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
+
+        broadcastWithGrade( );
 
         return res.send({ data: order });
     } catch( error ){
@@ -85,4 +99,94 @@ async function createOrder( req, res, next ){
 
 };
 
-module.exports = exports = createOrder;
+async function driverCreateOrder( req, res, next ){
+    let { origin, destination, route, criteria } = req.body;
+
+    if( criteria.taxiType != "red" && criteria.taxiType != "green")
+        return next( apiError.BadRequest( errors.ValidationError("Taxi Type should be red or green", 'taxiType')));
+
+    if( criteria.passenger != 4 && criteria.passenger != 5 && criteria.passenger != 6 && criteria.passenger != 7)
+        return next( apiError.BadRequest( errors.ValidationError("Invalid passenger number", 'passenger')));
+
+    if( criteria.tunnel != "any" && criteria.tunnel != "HungHomTunnel" && criteria.tunnel != "eastTunnel" && criteria.tunnel != "westTunnel" )
+        return next( apiError.BadRequest( errors.ValidationError("Invalid tunnel type", 'tunnel')));
+
+    if( criteria.discount !== 85 && criteria.discount !== 85 && criteria.discount !== 100 )
+        return next( apiError.BadRequest( errors.ValidationError("Invalid discount type", 'discount')));
+
+    origin = directSearch( origin );
+    // origin = directSearch( "xszxaxascas" );
+    destination = directSearch( destination );
+
+    [ origin, destination ] = await Promise.all([ origin, destination ]);
+
+    if( origin.length == 0 || destination == 0 )
+        return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+
+    if( route ){
+        route = await directSearch( route);
+        if( route.length == 0 )
+            return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+    }else
+        route = null;
+
+    try {
+        let data = await costCal( origin, destination, route, null, null, criteria.taxiType,  criteria.tunnel, criteria.discount );
+        
+        criteria['cost'] = data.cost;
+        criteria['time'] = data.time;
+        criteria['distance'] = data.distance;
+
+        let order = await Order.create({
+            start    : origin,
+            end      : destination,
+            route    : route,
+            criteria : criteria,
+            orderBy  : req.user._id  
+        });
+
+        // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
+
+        broadcastWithGrade( );
+
+        return res.send({ data: order });
+    } catch( error ){
+        console.error(error)
+        return next( apiError.InternalServerError() );
+    };
+}
+
+async function broadcastWithGrade(){
+    let Driver = await Socket
+                                .find({ type: 'driver' })
+                                .populate('user');
+
+    let AGradeDriver = Driver.filter( item => item.user.grade == 'A' ),
+        BGradeDriver = Driver.filter( item => item.user.grade == 'B' ),
+        CGradeDriver = Driver.filter( item => item.user.grade == 'C' ),
+        DGradeDriver = Driver.filter( item => item.user.grade == 'D' ),
+        EGradeDriver = Driver.filter( item => item.user.grade == 'E' );
+
+    [ AGradeDriver, BGradeDriver, CGradeDriver, DGradeDriver, EGradeDriver ] = 
+    await Promise.all([ AGradeDriver, BGradeDriver, CGradeDriver, DGradeDriver, EGradeDriver ]);
+
+    // console.log(BGradeDriver, "============================" .CGradeDriver );
+    Socket.emitListOfDriver(AGradeDriver, 'action', Socket.type.NEW_ORDER );
+    broadcastDelay( BGradeDriver, 10000 );
+    broadcastDelay( CGradeDriver, 30000 );
+    broadcastDelay( DGradeDriver, 60000 );
+    broadcastDelay( EGradeDriver, 120000 );
+};
+
+async function broadcastDelay( DriverList, delay ){
+    // console.log("=================================");
+    // console.log( DriverList, delay );
+    setTimeout( function(){Socket.emitListOfDriver(DriverList, 'action', Socket.type.NEW_ORDER )} , delay);
+};
+
+module.exports = exports = entry;
+
+// { address: '香港太子東海大廈',
+//   lat: 22.32338,
+//   lng: 114.168784,
+//   offset: [ '東海大廈', '太子', '香港' ] }

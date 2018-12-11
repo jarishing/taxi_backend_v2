@@ -1,4 +1,5 @@
 const Order    = require('../order.model'),
+      User     = require('../../user/user.model'),
       SocketModel = require('../../socket/socket.model'),
       debug    = require('debug')('Order'),
       apiError = require('server-api-errors'),
@@ -7,9 +8,7 @@ const Order    = require('../order.model'),
 
 async function getOrders( req, res, next ){
 
-    const condition = {};
-    let position;
-
+    let condition = {};
     switch(req.query.status){
 
         case 'accepted':
@@ -24,30 +23,29 @@ async function getOrders( req, res, next ){
             break;
 
         case 'commented':
+            condition.status = req.query.status;
             if ( req.user.type == 'user' ){
-                condition.status = req.query.status;
                 condition.orderBy = req.user._id;
                 break;
             } else if ( req.user.type == 'admin' ){
-                condition.status = req.query.status;
                 break;
             }else
                 return next( apiError.BadRequest());
                
         case 'new':
-            condition.status = 'new';
             if( req.user.type == 'driver' ){
-                position = await SocketModel.findOne({user: req.user._id});
-                position = position.position;
-            }else if( req.user.type == 'user' )
+                return driverGetNewOrder( req, res, next );
+                // position = await SocketModel.findOne({user: req.user._id});
+                // position = position.position;
+                // condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
+            }else if( req.user.type == 'user' ){
                 condition.orderBy = req.user._id;
-            else if( req.user.type == 'admin' );
+                condition.status = 'new';
+            }
+            else if( req.user.type == 'admin' )
+                condition.status = 'new';
             else
                 return next( apiError.BadRequest());
-            // if( req.user.type !== 'driver' )
-            //     return next( apiError.BadRequest());
-            // position = await SocketModel.findOne({user: req.user._id});
-            // position = position.position;
             break;
         case 'canceled':
         case 'badOrder':
@@ -66,22 +64,10 @@ async function getOrders( req, res, next ){
     };
 
     try {
-        // console.log('hello');
         let orders = await Order
                                 .find(condition)
                                 .populate('orderBy acceptBy')
                                 .lean();
-        
-                
-        //filter
-        if( req.user.type == 'driver' && condition.status == 'new' && orders ){
-            orders = orders.filter( item =>
-                withinRange( 
-                    {lat: item.start.lat, lng: item.start.lng },
-                    position, 3
-                )
-            );
-        };
 
         return res.json({ data: orders, count: orders.length });
     } catch( error ){
@@ -90,5 +76,86 @@ async function getOrders( req, res, next ){
     };
 
 };
+
+async function driverGetNewOrder( req, res, next ){
+    let socket = await SocketModel.findOne({user: req.user._id});
+        // driver = User.findById( req.user._id );
+
+    // [ socket, driver ] = await Promise.all([ position, driver ]);
+
+    position = socket.position;
+    const condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
+    // let time = new Date();
+
+    // switch( driver.grade ){
+    //     case 'A':
+    //         break;
+    //     case 'B':
+    //         time.setSeconds(time.getSeconds()-10);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'C':
+    //         time.setSeconds(time.getSeconds()-30);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'D':
+    //         time.setMinutes(time.getMinutes()-1);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'E':
+    //         time.setMinutes(time.getMinutes()-2);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     default:
+    //         return next( apiError.BadRequest( errors.ValidationError('Invalid page type', 'driver grade')));
+    // };
+
+    try{
+        let orders = await Order
+                                    .find(condition)
+                                    .populate('orderBy acceptBy')
+                                    .sort({createdAt: 1})
+                                    .limit(30)
+                                    .lean();
+
+        orders = orders.filter( item =>
+            withinRange( 
+                {lat: item.start.lat, lng: item.start.lng },
+                position, 3
+            )
+        );
+
+        return res.json({ data: orders, count: orders.length });
+
+    } catch( error ){
+        console.error(error)
+        return next( apiError.InternalServerError() );
+    };
+
+    // switch( driver.grade ){
+    //     case 'A':
+    //         return;
+    //     case 'B':
+    //         time.setSeconds(time.getSeconds()-10);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'C':
+    //         time.setSeconds(time.getSeconds()-30);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'D':
+    //         time.setMinutes(time.getMinutes()-1);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     case 'E':
+    //         time.setMinutes(time.getMinutes()-2);
+    //         condition.$and.push( { createdAt: { $lte: time} } );
+    //         break;
+    //     default:
+    //         return next( apiError.BadRequest( errors.ValidationError('Invalid page type', 'driver grade')));
+    // };
+
+
+}
 
 module.exports = exports = getOrders;

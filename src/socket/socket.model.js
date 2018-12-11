@@ -111,6 +111,19 @@ socketSchema.methods.whatIsMe = async function( access_token ){
     // debug(updated);
 };
 
+socketSchema.statics.emitListOfDriver = async function( DriverList, event, message ){
+    // const users = await this.find({ type: 'driver' }).lean();
+    // console.log( DriverList, event, message );
+    if(DriverList.length == 0 )
+        return;
+    for ( const user of DriverList )
+        if ( socketIo.sockets.connected[user.socketId] )
+            socketIo.sockets.connected[user.socketId].emit( event, message );
+        else    
+            debug("Driver not found");
+};
+
+
 const Socket = mongoose.model( "Socket", socketSchema );
 
 module.exports = exports = Socket;

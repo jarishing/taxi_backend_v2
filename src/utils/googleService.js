@@ -69,6 +69,16 @@ const directSearch = async ( keyword ) => {
                     }).asPromise();
 
     result = result.json.results;
+
+    if(result.length > 0){
+        result = {
+            address: result[0].formatted_address,
+            lat: result[0].geometry.location.lat,
+            lng: result[0].geometry.location.lng,
+            offset: []
+        }
+    };
+    
     return result;
 };
 
