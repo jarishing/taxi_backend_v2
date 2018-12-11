@@ -56,11 +56,9 @@ async function accept( req, res, next ){
         
         let socket = await Socket.findOne({ user: order.orderBy });
 
-        if(!socket)
-            return next( apiError.InternalServerError('orderer is offline'));
+        if(socket)
+            socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
          
-        socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
-
         order.status = 'accepted';
         order.acceptBy = req.user._id;
         order = await order.save();
