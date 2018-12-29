@@ -1,6 +1,6 @@
-const User = require('../../user/user.model'),
+const User = require('../../../user.model'),
       apiError = require('server-api-errors'),
-      errors   = require('../../errors'),
+      errors   = require('../../../../errors'),
       debug    = require('debug')('User');
 
 async function ban( req, res, next ){
@@ -11,7 +11,7 @@ async function ban( req, res, next ){
         if(!bannedUser)
             return next( apiError.BadRequest(errors.DocumentNotFound('User')));
         
-        bannedUser.valid = false;
+        bannedUser.ban = true;
         await bannedUser.save();
         return res.json({
             data: bannedUser

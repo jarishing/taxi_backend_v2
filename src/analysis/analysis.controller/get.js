@@ -69,8 +69,6 @@ async function data( req, res, next ) {
             timeLabel = [],
             timeData = [];
 
-        console.log( discount );
-
         start = start.map( item => {
             startLabel.push( item.district );
             startData.push( item.times );
@@ -92,19 +90,6 @@ async function data( req, res, next ) {
         });
 
         await Promise.all([ start, end, discount, time ]);
-
-        // console.log("===================");
-        // console.log(startLabel);
-        // console.log(startData);
-        // console.log("===================");
-        // console.log(endLabel);
-        // console.log(endData);
-        // console.log("===================");
-        // console.log(discountLabel);
-        // console.log(discountData);
-        // console.log("===================");
-        // console.log(timeLabel);
-        // console.log(timeData);
 
         const data = {
             start: {

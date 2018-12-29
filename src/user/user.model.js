@@ -8,9 +8,11 @@ const userSchema = new mongoose.Schema({
     username        : { type: String, required: true },
     hash            : String,
     salt            : String,
-    grade           : { type: String, default: 'C'},
+    grade           : { type: String, default: 'C', enum: [ 'A', 'B', 'C', 'D', 'E' ] },
     mark            : { type: Number, default: 50 },
-    valid           : { type: Boolean, default: true }
+    valid           : { type: Boolean, default: false },
+    ban             : { type: Boolean, default: false },
+    superClass      : { type: Boolean, default: false }
 }, { timestamps: true, strict: false });
 
 userSchema.methods.setPassword = function (password) {

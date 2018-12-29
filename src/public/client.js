@@ -34,7 +34,7 @@ async function register(){
  */
 async function login(){
     try {
-        const response = await axios.post('http://localhost:3100/api/user/login', { email, password });
+        const response = await axios.post('http://localhost:3100/api/user/login', { telephone_no, password });
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
         user = response.data.user;
@@ -81,7 +81,8 @@ async function findPlace(place){
 };
 
 const start = { "lat": 22.32338, "lng": 114.168784 },
-      end = { "lat": 22.3592713, "lng": 114.1082266 };
+      end = { "lat": 22.3592713, "lng": 114.1082266 },
+      route = { "lat": 22.3160575, "lng": 114.1703633 };
 
 const startOther = { "lat": 22.3160575 , "lng": 114.1703633 },
       endOther = { "lat": 22.280684, "lng": 114.173457 }
@@ -140,7 +141,7 @@ async function createOrder(){
     try {
         const response = await axios.post('http://localhost:3100/api/order', 
             {
-                origin: start, destination: end,
+                origin: start, destination: end, route: route,
                 criteria: {
                     taxiType: 'red', 
                     discount: 100,
@@ -202,13 +203,7 @@ async function getOrder(){
     };
 }
 
-
-/**
- * 
- * GET /api/order
- * 
- */
-async function getCommentOrder(){
+async function getAcceptedOrder(){
     try {
         const response = await axios.get('http://localhost:3100/api/order', 
             { 
@@ -223,9 +218,64 @@ async function getCommentOrder(){
     };
 }
 
+async function getCommentOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                params: { status: 'confirmed' },
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+async function getAllUserOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                params: { status: 'all' },
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
 /**
  * 
  * POST /api/order/comment
+ * 
+ */
+async function confirmOrder(){
+
+    const orderId = document.getElementById('orderNumber').value;
+    
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId,
+            { 
+                type:'confirm' 
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+/**
+ * 
+ * POST /api/order/:orderId
  * 
  */
 async function comment(){
@@ -248,11 +298,6 @@ async function comment(){
     };
 }
 
-/**
- * 
- * POST /api/order/:orderId 
- * 
- */
 async function cancelOrder(){
 
     const orderId = document.getElementById('orderNumber').value;
@@ -283,7 +328,7 @@ async function cancelOrder(){
 async function list(){
     
     try {
-        const response = await axios.get('http://localhost:3100/api/user',
+        const response = await axios.get('http://localhost:3100/api/user/?user=user&type=all',
             { 
                 headers: { Authorization: 'Bearer ' + access_token }
             }

@@ -1,6 +1,6 @@
-const Order    = require('../../order/order.model'),
+const Order    = require('../../../../order/order.model'),
       apiError = require('server-api-errors'),
-      errors   = require('../../errors'),
+      errors   = require('../../../../errors'),
       debug    = require('debug')('User');
 
 const entry = async( req, res, next ) => {

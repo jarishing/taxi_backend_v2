@@ -19,72 +19,75 @@ async function update ( req, res, next ) {
 
         [ result, total ] = await Promise.all( [ result, total ]);
 
-        result.map( item => {
-            //for start Data
-            if( item.start.offset ){
-                item.start.offset.map( offsetItem => {
-                let startOffsetIndex = location.indexOf( offsetItem );
-                if( startOffsetIndex > -1 ){
-                    let indexOfStartData = startData.findIndex(i => i.district === offsetItem );
-                    if( indexOfStartData > -1 ){
-                            startData[indexOfStartData].times = startData[indexOfStartData].times + 1;
-                    }else{
-                            startData.push( { district: offsetItem, times: 1 } );
+        if( result.length > 0 ){
+            result.map( item => {
+                //for start Data
+                if( item.start.offset ){
+                    item.start.offset.map( offsetItem => {
+                    let startOffsetIndex = location.indexOf( offsetItem );
+                    if( startOffsetIndex > -1 ){
+                        let indexOfStartData = startData.findIndex(i => i.district === offsetItem );
+                        if( indexOfStartData > -1 ){
+                                startData[indexOfStartData].times = startData[indexOfStartData].times + 1;
+                        }else{
+                                startData.push( { district: offsetItem, times: 1 } );
+                        }
                     }
-                }
-                });
-            };
+                    });
+                };
 
-            //for end Data
-            if( item.end.offset ){
-                item.end.offset.map( offsetItem => {
-                let endOffsetIndex = location.indexOf( offsetItem );
-                if( endOffsetIndex > -1 ){
-                    let indexOfEndData = endData.findIndex(i => i.district === offsetItem );
-                    if( indexOfEndData > -1 ){
-                            endData[indexOfEndData].times = endData[indexOfEndData].times + 1;
-                    }else{
-                            endData.push( { district: offsetItem, times: 1 } );
+                //for end Data
+                if( item.end.offset ){
+                    item.end.offset.map( offsetItem => {
+                    let endOffsetIndex = location.indexOf( offsetItem );
+                    if( endOffsetIndex > -1 ){
+                        let indexOfEndData = endData.findIndex(i => i.district === offsetItem );
+                        if( indexOfEndData > -1 ){
+                                endData[indexOfEndData].times = endData[indexOfEndData].times + 1;
+                        }else{
+                                endData.push( { district: offsetItem, times: 1 } );
+                        }
                     }
+                    });
+                };
+
+                //for discount
+                let indexOfDiscountData = discountData.findIndex(i => i.discount === item.criteria.discount );
+                if( indexOfDiscountData > -1 ){
+                    discountData[indexOfDiscountData].times = discountData[indexOfDiscountData].times + 1;
+                }else{
+                    discountData.push( { discount: item.criteria.discount, times: 1});
                 }
-                });
-            };
 
-            //for discount
-            let indexOfDiscountData = discountData.findIndex(i => i.discount === item.criteria.discount );
-            if( indexOfDiscountData > -1 ){
-                discountData[indexOfDiscountData].times = discountData[indexOfDiscountData].times + 1;
-            }else{
-                discountData.push( { discount: item.criteria.discount, times: 1});
-            }
+                //for time range
+                let indexOfTimeData = timeData.findIndex( i => i.timeRange === moment(item.createdAt).format('HH') );
+                if( indexOfTimeData > -1 ){
+                    timeData[indexOfTimeData].times = timeData[indexOfTimeData].times + 1;
+                }else{
+                    timeData.push( { timeRange: moment(item.createdAt).format('HH'), times: 1});
+                }
 
-            //for time range
-            let indexOfTimeData = timeData.findIndex( i => i.timeRange === moment(item.createdAt).format('HH') );
-            if( indexOfTimeData > -1 ){
-                timeData[indexOfTimeData].times = timeData[indexOfTimeData].times + 1;
-            }else{
-                timeData.push( { timeRange: moment(item.createdAt).format('HH'), times: 1});
-            }
+                //for average distance
+                distance = distance + item.criteria.distance;
+                //for average cost
+                cost = cost + parseInt(item.criteria.cost);
+            });
 
-            //for average distance
-            distance = distance + item.criteria.distance;
-            //for average cost
-            cost = cost + parseInt(item.criteria.cost);
-        });
+            distance = distance / total;
+            cost = cost / total;
 
-        distance = distance / total;
-        cost = cost / total;
-
-        let analysis = await Analysis.create({
-            startData: startData,
-            endData: endData,
-            discountData: discountData,
-            timeData: timeData,
-            averageDistance: distance,
-            averageCost: cost
-        });
-
-        return res.send({ data: analysis });
+            let analysis = await Analysis.create({
+                startData: startData,
+                endData: endData,
+                discountData: discountData,
+                timeData: timeData,
+                averageDistance: distance,
+                averageCost: cost
+            });
+    
+            return res.send({ data: analysis });
+        }
+        return res.send( 'no data find' );
     } catch( error ){
         console.log(error);
         return next( apiError.InternalServerError() );

@@ -5,7 +5,8 @@ const express = require('express'),
 
 const App = function(){
     
-    passport.use(require('./utils/passport.local'));
+    passport.use('local', require('./utils/passport.local'));
+    passport.use('admin', require('./utils/passport.admin'));
 
     const app = express();
     

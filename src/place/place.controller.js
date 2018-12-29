@@ -60,6 +60,11 @@ async function getLocationAddress( req, res, next ){
     try{
         let result = await Google.reverseGeocode( lat, lng );
 
+        // let test = await Google.testing( lat, lng );
+
+        // test.map( item => (
+        //     console.log(item)
+        // ))
         let data = result.map( item => ({
             address     : item.formatted_address,
             location    : item.geometry.location,

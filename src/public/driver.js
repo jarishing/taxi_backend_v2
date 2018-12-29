@@ -4,7 +4,7 @@ const type = 'driver',
       telephone_no =" 69381113",
       password = "123",
       vehicle_reg_no = "a12347",
-      taxi_driver_id_no = "b4703";
+      taxi_driver_id_photo = "b4703";
 
 /**
  * 
@@ -14,7 +14,7 @@ const type = 'driver',
 async function register(){
     try {
         const response = await axios.post('http://localhost:3100/api/user', 
-            { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_no }
+            { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo }
         );
         return displayMessage(JSON.stringify(response.data, null, 4));
     } catch (error){
@@ -30,7 +30,7 @@ async function register(){
  */
 async function login(){
     try {
-        const response = await axios.post('http://localhost:3100/api/user/login', { email, password });
+        const response = await axios.post('http://localhost:3100/api/user/login', { telephone_no, password });
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
     } catch (error){
@@ -100,6 +100,42 @@ async function getOrder(){
     };
 }
 
+async function getOrdererOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                params: { status: 'all', identity: 'orderer'},
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+async function getDriverOrder(){
+    try {
+        const response = await axios.get('http://localhost:3100/api/order', 
+            { 
+                params: { status: 'all'},
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+
+/**
+ * 
+ * POST /api/order/:orderId
+ * 
+ */
 async function acceptOrder(){
 
     const orderId = document.getElementById('orderNumber').value;
@@ -108,6 +144,26 @@ async function acceptOrder(){
         const response = await axios.post('http://localhost:3100/api/order/' + orderId, 
             {
                 type: 'accept'
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+};
+
+async function releaseOrder(){
+
+    const orderId = document.getElementById('orderNumber').value;
+
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId, 
+            {
+                type: 'release'
             },
             { 
                 headers: { Authorization: 'Bearer ' + access_token }

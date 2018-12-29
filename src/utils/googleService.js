@@ -148,4 +148,33 @@ const direction = async( origin, destination, route1, route2, route3, tunnel ) =
     return result;
 };
 
-module.exports = { searchNearBy, autocomplete, directSearch, reverseGeocode, placeIdToLatLng, direction };
+const testing = async ( lat, lng ) => {
+
+    let result = await googleMapsClient.placesNearby({
+                            language: 'zh-TW',
+                            location: [lat, lng],
+                            radius: 100
+                        })
+                        .asPromise();
+
+    result = result.json.results;
+
+    result = result.map( item => 
+        console.log( item )
+    );
+
+    result = result.map( item => 
+        item.formatted_address = item.vicinity
+    );
+    return result;
+};
+
+module.exports = { 
+    searchNearBy, 
+    autocomplete, 
+    directSearch, 
+    reverseGeocode, 
+    placeIdToLatLng, 
+    direction,
+    testing 
+};

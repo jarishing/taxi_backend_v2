@@ -1,6 +1,6 @@
-const User = require('../../user/user.model'),
+const User = require('../../../user.model'),
       apiError = require('server-api-errors'),
-      errors   = require('../../errors'),
+      errors   = require('../../../../errors'),
       debug    = require('debug')('User');
 
 async function unban( req, res, next ){
@@ -11,7 +11,7 @@ async function unban( req, res, next ){
         if(!unbannedUser)
             return next( apiError.BadRequest(errors.DocumentNotFound('User')));
         
-        unbannedUser.valid = true;
+        unbannedUser.ban = false;
         await unbannedUser.save();
         return res.json({
             data: unbannedUser

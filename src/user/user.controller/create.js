@@ -5,7 +5,7 @@ const User = require('../user.model'),
       login = require('./login.js');
 
 const entry = ( req, res, next ) => {
-
+    console.log(req.body.type);
     switch( req.body.type ){
         case 'admin':
             return createAdmin(req, res, next);
@@ -21,7 +21,7 @@ const entry = ( req, res, next ) => {
 let setupIsDone = false;
 
 async function createAdmin(req, res, next){
-
+    console.log( "hello" );
     if( setupIsDone )
         return next( apiError.BadRequest(errors.UserExists()));
     
@@ -44,10 +44,10 @@ async function createAdmin(req, res, next){
 
 async function createDriver(req, res, next){
     
-    const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_no } = req.body;
+    const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo } = req.body;
 
     const details = [];
-    for ( const field of ['username', 'email', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_no'])
+    for ( const field of ['username', 'email', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_photo'])
         if ( req.body[field] === undefined)
             details.push( errors.MissingParameter( field ));
         
@@ -56,12 +56,12 @@ async function createDriver(req, res, next){
 
     try {
 
-        let driver = await User.findOne({ email: email });
+        let driver = await User.findOne({ telephone_no: telephone_no });
      
         if ( driver )
             return next( apiError.BadRequest(errors.UserExists()));
 
-        driver = await User.create({ type, username, email, telephone_no, vehicle_reg_no, taxi_driver_id_no  }, password );
+        driver = await User.create({ type, username, email, telephone_no, vehicle_reg_no, taxi_driver_id_photo  }, password );
         return login(req, res, next );
     } catch( error ){   
         debug(error);
@@ -84,12 +84,13 @@ async function createUser(req, res, next){
 
     try {
 
-        let user = await User.findOne({ email: email });
+        let user = await User.findOne({ telephone_no: telephone_no });
 
         if ( user )
             return next( apiError.BadRequest(errors.UserExists()));
 
-        user = await User.create({ type, username, email, telephone_no }, password );
+        let valid = true;
+        user = await User.create({ type, username, email, telephone_no, valid }, password );
         return login(req, res, next );
     } catch( error ){   
         debug(error);

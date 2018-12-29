@@ -5,15 +5,53 @@ const mongoose = require("mongoose"),
 
 const orderSchema = new mongoose.Schema({
 
+    orderId: { type: Number, required: true, unique: true },
+
     start: { type: Schema.Types.Mixed, required: true },
     end: { type: Schema.Types.Mixed, required: true },
     route: { type: Schema.Types.Mixed },
-    criteria: { type: Schema.Types.Mixed, required: true },
+    // criteria: { type: Schema.Types.Mixed, required: true },
+
+    criteria: {
+        taxiType: { 
+            type: String,
+            enum: [ 'red', 'green' ],
+            required: true
+        },
+        passenger:{
+            type: Number,
+            required: true
+        },
+        tunnel:{
+            type: String,
+            enum: [ 'any', 'hungHomTunnel', 'eastTunnel', 'westTunnel' ],
+            require: true
+        },
+        discount:{
+            type: Number,
+            require: true
+        },
+        cost: {
+            type: Number,
+            require: true
+        },
+        time: {
+            type: Number,
+            require: true
+        },
+        distance: {
+            type: Number,
+            require: true
+        },
+        required: {
+            type: String
+        }
+    },
 
     status: { 
         type: String, 
         default: 'new',
-        enum: [ 'new', 'accepted', 'canceled', 'commented', 'badOrder' ]
+        enum: [ 'new', 'accepted', 'confirmed', 'canceled', 'commented', 'badOrder' ]
     },
     
     orderBy: { type: Schema.Types.ObjectId, ref: "User", required: true },

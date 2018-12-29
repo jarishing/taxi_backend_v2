@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose"),
+      
       SocketIO = require('socket.io'),
       withinRange = require('../utils/withinRange'),
       debug = require('debug')('Socket'),
@@ -107,7 +108,9 @@ socketSchema.methods.whatIsMe = async function( access_token ){
     const doc = jwt.verify(access_token, process.env.SECRET_KEY);
 
     const updated = await Socket.findOneAndUpdate({ socketId: this.socketId }, { user: doc._id, type: doc.type }, { upsert: true, new: true }).exec();
-
+    // console.log( updated );
+    if( updated )
+        updated.emitSocket('action', 'CONNECTION' );
     // debug(updated);
 };
 
