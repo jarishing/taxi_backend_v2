@@ -1,11 +1,11 @@
 const User     = require('../user.model'),
       debug    = require('debug')('User'),
-      apiError = require('server-api-errors'); 
+      apiError = require('server-api-errors');
 
-const entry = async( req, res, next ) => {
-    switch( req.user.type ){
-        case 'admin':
-            return searchUser( req, res, next );
+const entry = async (req, res, next) => {
+    switch (req.user.type) {
+    case 'admin':
+        return searchUser( req, res, next);
         case 'user':
         case 'driver':
             return get( req, res, next );

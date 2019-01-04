@@ -10,6 +10,9 @@ const entry = async( req, res, next ) => {
             return getActiveUserList( req, res, next );
         case 'all':
             return getAllUserList( req, res, next );
+        case 'nonVaild':
+        case 'banned':
+            return getStatusUserList( req, res, next );
         default:
             return next( apiError.BadRequest( errors.MissingParameter("type")));
     };   
@@ -58,5 +61,32 @@ async function getAllUserList( req, res, next ){
         return next( apiError.InternalServerError() );
     };
 };
+
+async function getStatusUserList( req, res, next ){
+
+    let conditions = { $and:[ { type: 'driver' } ] };
+
+    switch( req.query.type ){
+        case 'nonVaild':
+            conditions.$and.push( { valid: false } );
+            break;
+        case 'banned':
+            conditions.$and.push( { ban: true } );
+            break;
+    };
+
+    console.log( conditions )
+    try{
+        const users = await User
+                                .find(conditions)
+                                .select('-__v -salt -hash')
+                                .lean();
+
+        return res.send({ data: users});
+    } catch( error ){
+        console.log( error );
+        return next( apiError.InternalServerError() );
+    };
+}
 
 module.exports = exports = entry;

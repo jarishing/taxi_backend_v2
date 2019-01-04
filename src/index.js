@@ -1,7 +1,7 @@
 require('./config.js');
 
 const app = require('./app'),
-    //   Schedule = require('./utils/schedule'),
+      Schedule = require('./utils/schedule'),
       port = process.env.PORT || 3100;
 
 

@@ -20,6 +20,12 @@
     <button class="btn btn-default" onclick="list()"> Get Users </button>
 
     <br/> <br/>
+    <form>
+        <input type="file" name="driverId" id="driverId">
+    </form>
+    <button class="btn btn-default" onclick="upload()"> Upload </button>
+
+    <br/> <br/>
 
     <button class="btn btn-default" onclick="whatIsMe()"> What is me </button>
     <button class="btn btn-default" onclick="renewLocation()"> Renew Location </button>
@@ -29,12 +35,9 @@
 
     <button class="btn btn-default" onclick="findPlace('東海大廈')"> 東海大廈 </button>
     <button class="btn btn-default" onclick="findPlace('青衣城')"> 青衣城 </button>
-<<<<<<< HEAD
     <button class="btn btn-default" onclick="findPlace('信和')">信和</button>
     <button class="btn btn-default" onclick="findPlace('會展')">會展</button>
-=======
     <button class="btn btn-default" onclick="findPlace('先達')"> 先達 </button>
->>>>>>> origin
     <button class="btn btn-default" onclick="findAddress()"> Get Address by lat lng </button>
     <button class="btn btn-default" onclick="path()"> Get Path </button>
 
@@ -53,7 +56,6 @@
         <input class="form-control" style="margin-right:4px" placeholder="order number" id="orderNumber"/>
     </div>
 
-    <button class="btn btn-default" onclick="confirmOrder()"> Confirm Order</button>
     <button class="btn btn-default" onclick="comment()"> Comment </button>
     <button class="btn btn-default" onclick="cancelOrder()"> Cancel Order </button>
 

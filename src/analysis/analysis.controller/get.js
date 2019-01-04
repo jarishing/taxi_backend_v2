@@ -27,14 +27,22 @@ async function main( req, res, next ){
         
         [ activeUser, activeDriver, ordering, analysisData ] = await Promise.all([ activeUser, activeDriver, ordering, analysisData ]);
 
-        let popularStart = analysisData.startData.sort(function (a, b) { return -( a.times - b.times); }),
+        let popularStart,popularEnd,popularTime;
+
+        if( !analysisData ){
+            popularStart = [];
+            popularEnd = [];
+            popularTime = [];
+        }else{
+            popularStart = analysisData.startData.sort(function (a, b) { return -( a.times - b.times); }),
             popularEnd = analysisData.endData.sort(function (a, b) { return -( a.times - b.times); }),
             popularTime = analysisData.timeData.sort(function (a, b) { return -( a.times - b.times); });
-        
+        }
+            
         let simpleAnalysisData = {
             mostPopularStart: popularStart[0]? popularStart[0]:null,
             mostPopularEnd: popularEnd[0]? popularEnd[0]:null,
-            averageDistance: analysisData.averageDistance,
+            averageDistance: analysisData? analysisData.averageDistance:null,
             mostPopularTime: popularTime[0]? popularTime[0]:null
         }
 
@@ -69,6 +77,45 @@ async function data( req, res, next ) {
             timeLabel = [],
             timeData = [];
 
+        // console.log("==============");
+        // console.log( time );
+        // console.log(req.query.timeRange);
+
+        if( req.query.timeRange ){
+            //have timerange filter
+            let indexOfTimeRamge = time.findIndex(i => i.timeRange === req.query.timeRange);
+
+            if( indexOfTimeRamge > -1 ){
+                // console.log( time[indexOfTimeRamge].data.startData );
+                start = time[indexOfTimeRamge].data.startData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5);
+                end = time[indexOfTimeRamge].data.endData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5);
+                discount = time[indexOfTimeRamge].data.discountData.sort(function (a, b) { return -( a.times - b.times); });
+            }else{
+                const data = {
+                    start: {
+                        startLabel: startLabel,
+                        startData: startData
+                    },
+                    end: {
+                        endLabel: endLabel,
+                        endData: endData
+                    },
+                    discount: {
+                        discountLabel: discountLabel,
+                        discountData: discountData
+                    },
+                    time: {
+                        timeLabel: timeLabel,
+                        timeData: timeData
+                    }
+                }
+        
+                return res.send({ data });
+            }
+        }
+        // }else{
+
+        //no timeRange fiter 
         start = start.map( item => {
             startLabel.push( item.district );
             startData.push( item.times );
@@ -88,6 +135,7 @@ async function data( req, res, next ) {
             timeLabel.push( item.timeRange );
             timeData.push( item.times );
         });
+        // }
 
         await Promise.all([ start, end, discount, time ]);
 

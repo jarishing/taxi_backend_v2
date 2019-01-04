@@ -27,7 +27,7 @@ const entry = async( req, res, next) => {
          * 
          */
         case 'confirm':
-            if( req.user.type !== 'user' && req.user.type !== 'driver' )
+            if( req.user.type !== 'driver' )
                 return next( apiError.Forbidden(errors.ValidationError('Only user can confirm order')));  
             if( req.order.status != 'accepted' )
                 return next( apiError.Forbidden(errors.ValidationError('Order status error')));  
@@ -119,10 +119,11 @@ async function confirm( req, res, next ){
         order.status = 'confirmed';
         order = await order.save();
 
-        const socket = await Socket.findOne({ user: order._doc.acceptBy });
+        // const socket = await Socket.findOne({ user: order._doc.acceptBy });
+        let socket = await Socket.findOne({ user: order.orderBy });
 
         if( socket ){
-            socket.emitSocket('action', 'USER_CONFIRM' );
+            socket.emitSocket('action', 'DRIVER_CONFIRM' );
             return res.json({ status: 1, data: order });
         }else{
             return res.json({ status: 0, data: order });

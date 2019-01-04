@@ -21,6 +21,25 @@ async function update ( req, res, next ) {
 
         if( result.length > 0 ){
             result.map( item => {
+
+                //for time range
+                let indexOfTimeData = timeData.findIndex( i => i.timeRange === moment(item.createdAt).format('HH') );
+                if( indexOfTimeData > -1 ){
+                    timeData[indexOfTimeData].times = timeData[indexOfTimeData].times + 1;
+                }else{
+                    timeData.push( { 
+                        timeRange: moment(item.createdAt).format('HH'), 
+                        times: 1,
+                        data:{
+                            startData: [],
+                            endData: [],
+                            discountData: []
+                        }
+                    });
+                }
+
+                indexOfTimeData = timeData.findIndex( i => i.timeRange === moment(item.createdAt).format('HH') );
+
                 //for start Data
                 if( item.start.offset ){
                     item.start.offset.map( offsetItem => {
@@ -31,6 +50,13 @@ async function update ( req, res, next ) {
                                 startData[indexOfStartData].times = startData[indexOfStartData].times + 1;
                         }else{
                                 startData.push( { district: offsetItem, times: 1 } );
+                        }
+
+                        let indexOfStartDataInTime = timeData[indexOfTimeData].data.startData.findIndex(i => i.district === offsetItem );
+                        if( indexOfStartDataInTime > -1 ){
+                            timeData[indexOfTimeData].data.startData[indexOfStartDataInTime].times = timeData[indexOfTimeData].data.startData[indexOfStartDataInTime].times + 1;
+                        }else{
+                            timeData[indexOfTimeData].data.startData.push( { district: offsetItem, times: 1 } );
                         }
                     }
                     });
@@ -47,6 +73,13 @@ async function update ( req, res, next ) {
                         }else{
                                 endData.push( { district: offsetItem, times: 1 } );
                         }
+
+                        let indexOfEndDataInTime = timeData[indexOfTimeData].data.endData.findIndex(i => i.district === offsetItem );
+                        if( indexOfEndDataInTime > -1 ){
+                            timeData[indexOfTimeData].data.endData[indexOfEndDataInTime].times = timeData[indexOfTimeData].data.endData[indexOfEndDataInTime].times + 1;
+                        }else{
+                            timeData[indexOfTimeData].data.endData.push( { district: offsetItem, times: 1 } );
+                        }
                     }
                     });
                 };
@@ -57,14 +90,13 @@ async function update ( req, res, next ) {
                     discountData[indexOfDiscountData].times = discountData[indexOfDiscountData].times + 1;
                 }else{
                     discountData.push( { discount: item.criteria.discount, times: 1});
-                }
+                };
 
-                //for time range
-                let indexOfTimeData = timeData.findIndex( i => i.timeRange === moment(item.createdAt).format('HH') );
-                if( indexOfTimeData > -1 ){
-                    timeData[indexOfTimeData].times = timeData[indexOfTimeData].times + 1;
+                let indexOfDiscountDataInTime = timeData[indexOfTimeData].data.discountData.findIndex(i => i.discount === item.criteria.discount );
+                if( indexOfDiscountDataInTime > -1 ){
+                    timeData[indexOfTimeData].data.discountData[indexOfDiscountDataInTime].times = timeData[indexOfTimeData].data.discountData[indexOfDiscountDataInTime].times + 1;
                 }else{
-                    timeData.push( { timeRange: moment(item.createdAt).format('HH'), times: 1});
+                    timeData[indexOfTimeData].data.discountData.push( { discount: item.criteria.discount, times: 1});
                 }
 
                 //for average distance
@@ -86,6 +118,7 @@ async function update ( req, res, next ) {
             });
     
             return res.send({ data: analysis });
+            // return res.send({ data: timeData });
         }
         return res.send( 'no data find' );
     } catch( error ){

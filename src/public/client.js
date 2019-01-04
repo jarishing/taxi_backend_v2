@@ -340,6 +340,24 @@ async function list(){
     };
 }
 
+async function upload(){
+    var driverId = document.getElementById("driverId").files[0];
+    var formData = new FormData();
+    formData.append("image", driverId );
+    console.log(formData.get('image'));
+    try {
+        const response = await axios.post('http://localhost:3100/api/upload/',formData,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+        });
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
 /**
  * 
  * Socket

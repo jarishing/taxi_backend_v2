@@ -21,7 +21,6 @@ const entry = ( req, res, next ) => {
 let setupIsDone = false;
 
 async function createAdmin(req, res, next){
-    console.log( "hello" );
     if( setupIsDone )
         return next( apiError.BadRequest(errors.UserExists()));
     
@@ -29,7 +28,8 @@ async function createAdmin(req, res, next){
         let admin = new User({
             type        : 'admin',
             username    : 'admin',
-            email       : 'admin@admin.com'
+            email       : 'admin@admin.com',
+            valid       : true
         });
 
         admin.setPassword('123456');
@@ -46,8 +46,9 @@ async function createDriver(req, res, next){
     
     const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo } = req.body;
 
+    console.log( type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo );
     const details = [];
-    for ( const field of ['username', 'email', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_photo'])
+    for ( const field of ['username', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_photo'])
         if ( req.body[field] === undefined)
             details.push( errors.MissingParameter( field ));
         

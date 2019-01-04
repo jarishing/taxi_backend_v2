@@ -12,6 +12,8 @@ const entry = async( req, res, next ) => {
 }
 
 async function adminLogin( req, res, next ){
+    console.log("=============");
+    console.log( req.body);
     passport.authenticate('admin', function( error, user, info ){
         if ( error )
             return next( errors.InternalServerError() );

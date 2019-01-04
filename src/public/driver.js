@@ -6,6 +6,15 @@ const type = 'driver',
       vehicle_reg_no = "a12347",
       taxi_driver_id_photo = "b4703";
 
+// const type = 'driver',
+//     username = "ken",
+//     email = "ken@live.hk",
+//     telephone_no ="67676767",
+//     password = "123",
+//     vehicle_reg_no = "a390",
+//     taxi_driver_id_photo = "djsak";
+
+
 /**
  * 
  * POST /api/user
@@ -175,6 +184,31 @@ async function releaseOrder(){
         return displayMessage(JSON.stringify(error, null, 4));
     };
 };
+
+/**
+ * 
+ * POST /api/order/comment
+ * 
+ */
+async function confirmOrder(){
+
+    const orderId = document.getElementById('orderNumber').value;
+    
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId,
+            { 
+                type:'confirm' 
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
 
 /**
  * 

@@ -25,6 +25,12 @@ const App = function(){
     app.use(require('cookie-parser')());
     app.use(require('cors')());
 
+     /**
+     * 
+     * public folder
+     * 
+     */
+
     if( process.env.NODE_ENV === 'development')
         app.use(express.static(__dirname + '/public'));
     /**

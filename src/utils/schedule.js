@@ -18,10 +18,11 @@ var delOvertimeOrder = schedule.scheduleJob( '*/1 * * * *',async function(){
     conditions.$and.push( { createdAt: { $lte: time} } );
 
     try{
+        //await 
         Order.updateMany( conditions, { $set: { status: 'badOrder'}}).exec();
     }catch( error ){
         console.error(error)
-        return next( apiError.InternalServerError() );
+        // return next( apiError.InternalServerError() );
     };
 });
 
