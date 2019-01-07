@@ -85,7 +85,8 @@ socketSchema.statics.drop = async function( socketId ){
     const socket = await this.findOne({ socketId });
     
     if ( socket ){
-        await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
+        if( socket.type == "user" )
+            await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
     }
 
     await this.find({ socketId }).remove().exec();

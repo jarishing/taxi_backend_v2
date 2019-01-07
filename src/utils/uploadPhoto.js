@@ -17,10 +17,10 @@ const router = express.Router();
 
 // Init Upload
 const upload = multer({
-    storage: storage,
-    fileFilter: function(req, file, cb){
-        checkFileType(file, cb);
-    }
+    storage: storage
+    // fileFilter: function(req, file, cb){
+    //     checkFileType(file, cb);
+    // }
 }).single('image');
 
 function checkFileType(file, cb){

@@ -62,6 +62,8 @@ const orderSchema = new mongoose.Schema({
     orderBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     acceptBy: { type: Schema.Types.ObjectId, ref: "User" },
 
+    overtime: { type: Boolean, default: false },
+
     userComment : {
         star: Number,
         comment: String,

@@ -94,48 +94,53 @@ async function getOrders( req, res, next ){
 };
 
 async function driverGetNewOrder( req, res, next ){
-    let socket = await SocketModel.findOne({user: req.user._id});
+    let socket = SocketModel.findOne({user: req.user._id});
         driver = User.findById( req.user._id );
 
     [ socket, driver ] = await Promise.all([ socket, driver ]);
+    // console.log( socket );
 
     // if( socket )
     //     let position = socket.position;
     
-    const condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
+    // const condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
+    // const condition = { $and:[ { status: 'new' }] };
+    const condition = { $or: [ 
+                            { $and:[ { status: 'new' }] },
+                            { $and:[ { status: 'new' }, { orderBy:  req.user._id }] }
+                        ]};
+
     let time = new Date();
 
     if( driver.superClass == false ){
         switch( driver.grade ){
             case 'A':
                 time.setSeconds(time.getSeconds()-5);
-                condition.$and.push( { createdAt: { $lte: time} } );
+                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
                 break;
             case 'B':
                 time.setSeconds(time.getSeconds()-5);
-                condition.$and.push( { createdAt: { $lte: time} } );
+                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
                 break;
             case 'C':
                 time.setSeconds(time.getSeconds()-5);
                 // time.setSeconds(time.getSeconds()-30);
-                condition.$and.push( { createdAt: { $lte: time} } );
+                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
                 break;
             case 'D':
                 time.setSeconds(time.getSeconds()-10);
                 // time.setMinutes(time.getMinutes()-1);
-                condition.$and.push( { createdAt: { $lte: time} } );
+                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
                 break;
             case 'E':
                 time.setSeconds(time.getSeconds()-20);
                 // time.setMinutes(time.getMinutes()-2);
-                condition.$and.push( { createdAt: { $lte: time} } );
+                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
                 break;
             default:
                 return next( apiError.BadRequest( errors.ValidationError('Invalid page type', 'driver grade')));
         };
     };
-
-    console.log( condition );
 
     try{
         let orders = await Order
