@@ -34,7 +34,7 @@ async function register(){
  */
 async function login(){
     try {
-        const response = await axios.post('http://localhost:3100/api/user/login', { telephone_no, password });
+        const response = await axios.post('http://localhost:3100/api/user/login', { telephone_no, password, type });
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
         user = response.data.user;

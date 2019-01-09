@@ -24,5 +24,11 @@ module.exports = exports = {
 
     load : require('./load'),
 
-    update: require('./update')
+    update: require('./update'),
+    /**
+     * 
+     * Delete Account
+     * 
+     */
+    deleteAccount: require('./delete')
 };

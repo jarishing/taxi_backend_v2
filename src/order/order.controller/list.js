@@ -68,7 +68,8 @@ async function getOrders( req, res, next ){
             }else if ( req.user.type == 'driver' ){
                 condition = { $and:[ { status: { $ne: 'badOrder' } } ] };
                 if( req.query.identity == 'orderer')
-                    condition.$and.push( { orderBy: req.user._id } );
+                    // condition.$and.push( { orderBy: req.user._id } );
+                    return driverMakeOrderList( req, res, next );
                 else{
                     condition.$and.push( { acceptBy: req.user._id } );
                 }
@@ -93,6 +94,24 @@ async function getOrders( req, res, next ){
 
 };
 
+async function driverMakeOrderList( req, res, next ){
+    let condition = { $and:[ { status: { $ne: 'badOrder' } }, { orderBy: req.user._id } ] };
+
+    try {
+        let orders = await Order
+                                .find(condition)
+                                .populate('orderBy acceptBy')
+                                .sort({createdAt: 1})
+                                .limit(20)
+                                .lean();
+
+        return res.json({ data: orders, count: orders.length });
+    } catch( error ){
+        console.error(error)
+        return next( apiError.InternalServerError() );
+    };
+}
+
 async function driverGetNewOrder( req, res, next ){
     let socket = SocketModel.findOne({user: req.user._id});
         driver = User.findById( req.user._id );
@@ -112,35 +131,37 @@ async function driverGetNewOrder( req, res, next ){
 
     let time = new Date();
 
-    if( driver.superClass == false ){
-        switch( driver.grade ){
-            case 'A':
-                time.setSeconds(time.getSeconds()-5);
-                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
-                break;
-            case 'B':
-                time.setSeconds(time.getSeconds()-5);
-                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
-                break;
-            case 'C':
-                time.setSeconds(time.getSeconds()-5);
-                // time.setSeconds(time.getSeconds()-30);
-                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
-                break;
-            case 'D':
-                time.setSeconds(time.getSeconds()-10);
-                // time.setMinutes(time.getMinutes()-1);
-                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
-                break;
-            case 'E':
-                time.setSeconds(time.getSeconds()-20);
-                // time.setMinutes(time.getMinutes()-2);
-                condition.$or[0].$and.push( { createdAt: { $lte: time} } );
-                break;
-            default:
-                return next( apiError.BadRequest( errors.ValidationError('Invalid page type', 'driver grade')));
-        };
+    // if( driver.superClass == false ){
+    switch( driver.grade ){
+        case 'S':
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+        case 'A':
+            time.setSeconds(time.getSeconds()-5);
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+            break;
+        case 'B':
+            time.setSeconds(time.getSeconds()-5);
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+            break;
+        case 'C':
+            time.setSeconds(time.getSeconds()-5);
+            // time.setSeconds(time.getSeconds()-30);
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+            break;
+        case 'D':
+            time.setSeconds(time.getSeconds()-10);
+            // time.setMinutes(time.getMinutes()-1);
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+            break;
+        case 'E':
+            time.setSeconds(time.getSeconds()-20);
+            // time.setMinutes(time.getMinutes()-2);
+            condition.$or[0].$and.push( { createdAt: { $lte: time} } );
+            break;
+        default:
+            return next( apiError.BadRequest( errors.ValidationError('Invalid page type', 'driver grade')));
     };
+    // };
 
     try{
         let orders = await Order

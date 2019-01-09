@@ -63,6 +63,9 @@ async function main( req, res, next ){
 async function data( req, res, next ) {
     try{
         let result = await Analysis.findOne().sort({createdAt: -1});
+        if( !result )
+            return next( apiError.InternalServerError('data is empty') );
+
         let start = result.startData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5),
             end = result.endData.sort(function (a, b) { return -( a.times - b.times); }).slice(0, 5),
             discount = result.discountData.sort(function (a, b) { return -( a.times - b.times); }),

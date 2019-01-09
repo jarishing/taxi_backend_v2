@@ -12,8 +12,6 @@ const entry = async( req, res, next ) => {
 }
 
 async function adminLogin( req, res, next ){
-    console.log("=============");
-    console.log( req.body);
     passport.authenticate('admin', function( error, user, info ){
         if ( error )
             return next( errors.InternalServerError() );
@@ -30,6 +28,10 @@ async function login( req, res, next ){
         if ( error )
             return next( errors.InternalServerError() );
         if ( user ){
+            if( user.type != req.body.type )
+                return next( errors.InternalServerError('user type error') );
+            if( user.valid == false && user.type == 'driver' )
+                return next( errors.Unauthorized( info ) );
             const token = user.generateJwt();
             return res.send({ access_token: token, user });
         } else 

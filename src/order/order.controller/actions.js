@@ -92,9 +92,9 @@ async function accept( req, res, next ){
         // console.log( socket );
         if( socket ){
             socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
-            return res.json({ status: 1, data: order });
+            return res.json({ received: 1, data: order });
         }else{
-            return res.json({ status: 0, data: order });
+            return res.json({ received: 0, data: order });
         }
 
         // let socket = await Socket.findOne({ user: order.orderBy });
@@ -137,9 +137,9 @@ async function confirm( req, res, next ){
 
         if( socket ){
             socket.emitSocket('action', 'DRIVER_CONFIRM' );
-            return res.json({ status: 1, data: order });
+            return res.json({ received: 1, data: order });
         }else{
-            return res.json({ status: 0, data: order });
+            return res.json({ received: 0, data: order });
         }
     } catch ( error ){
         console.log(error);
@@ -163,13 +163,15 @@ async function cancelByUser( req, res, next ){
 
         if ( order._doc.acceptBy ){
             const socket = await Socket.findOne({ user: order._doc.acceptBy });
-            if ( socket )
+            if ( socket ){
                 socket.emitSocket('action', 'USER_CANCEL' );
+                return res.json({ received: 1, data: order });
+            }
         };
 
         // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
         
-        return res.json({ data: order });
+        return res.json({ received: 0, data: order });
     } catch ( error ){
         return next( apiError.InternalServerError());   
     };
@@ -209,11 +211,13 @@ async function release( req, res, next ){
 
         let socket = await Socket.findOne({ user: order.orderBy });
 
-        if( socket )
+        if( socket ){
             socket.emitSocket('action', 'DRIVER_RELEASE' );
+            return res.json({ received: 1, data: order });
+        }
         
         // Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
-        return res.json({ data: order });
+        return res.json({ received: 0, data: order });
     } catch ( error ){
         console.log( error );
         return next( apiError.InternalServerError());   

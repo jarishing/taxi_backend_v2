@@ -5,7 +5,7 @@ const User = require('../user.model'),
       login = require('./login.js');
 
 const entry = ( req, res, next ) => {
-    console.log(req.body.type);
+    // console.log(req.body.type);
     switch( req.body.type ){
         case 'admin':
             return createAdmin(req, res, next);
@@ -46,7 +46,7 @@ async function createDriver(req, res, next){
     
     const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo } = req.body;
 
-    console.log( type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo );
+    // console.log( type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo );
     const details = [];
     for ( const field of ['username', 'telephone_no', 'password', 'vehicle_reg_no', 'taxi_driver_id_photo'])
         if ( req.body[field] === undefined)
