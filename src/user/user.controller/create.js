@@ -63,7 +63,8 @@ async function createDriver(req, res, next){
             return next( apiError.BadRequest(errors.UserExists()));
 
         driver = await User.create({ type, username, email, telephone_no, vehicle_reg_no, taxi_driver_id_photo  }, password );
-        return login(req, res, next );
+        // return login(req, res, next );
+        return res.send({ data: driver });
     } catch( error ){   
         debug(error);
         return next( apiError.InternalServerError());
@@ -92,7 +93,8 @@ async function createUser(req, res, next){
 
         let valid = true;
         user = await User.create({ type, username, email, telephone_no, valid }, password );
-        return login(req, res, next );
+        // return login(req, res, next );
+        return res.send({ data: user });
     } catch( error ){   
         debug(error);
         return next( apiError.InternalServerError());
