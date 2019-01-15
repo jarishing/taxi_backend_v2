@@ -28,8 +28,9 @@ var confirmOverTimeOrder = schedule.scheduleJob( '*/5 * * * * *',async function(
         
         overtimeOrder = overtimeOrder.map( item => new Promise( async resovle=>{
             const socket = await Socket.findOne({ user: item.orderBy });
+            console.log(item);
             if(socket){
-                socket.emitSocket('action', 'ORDER_OVERTIME_CONFIRM' );
+                socket.emitSocket('action', `ORDER_OVERTIME_CONFIRM-${item._id}` );
                 item.overtime = true;
             }else{
                 item.status = 'badOrder';
