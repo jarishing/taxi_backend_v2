@@ -1,7 +1,8 @@
 const express = require('express'),
       debug   = require('debug')('Server'),
       passport = require("passport"),
-      apiError = require('server-api-errors');
+      apiError = require('server-api-errors'),
+      path = require('path');
 
 const App = function(){
     
@@ -40,6 +41,12 @@ const App = function(){
      */
     app.use("/api", require('./index.route'));
     // Catch the 404 error and pass it to the error handler
+
+    app.use(express.static(path.resolve( __dirname, 'build')));  
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve( __dirname, 'build', 'index.html'));
+    });
 
     app.use( (req, res, next ) => {
         const error = new apiError.NotFound();
