@@ -239,6 +239,26 @@ async function releaseOrder(){
     };
 };
 
+async function overtimeOrder(){
+
+    const orderId = document.getElementById('orderNumber').value;
+
+    try {
+        const response = await axios.post('http://localhost:3100/api/order/' + orderId, 
+            {
+                type: 'overtime'
+            },
+            { 
+                headers: { Authorization: 'Bearer ' + access_token }
+            }
+        );
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+};
+
 /**
  * 
  * POST /api/order/comment

@@ -84,6 +84,7 @@ async function getOrders( req, res, next ){
         let orders = await Order
                                 .find(condition)
                                 .populate('orderBy acceptBy')
+                                .sort({createdAt: 1})
                                 .lean();
 
         return res.json({ data: orders, count: orders.length });
@@ -118,9 +119,6 @@ async function driverGetNewOrder( req, res, next ){
 
     [ socket, driver ] = await Promise.all([ socket, driver ]);
     // console.log( socket );
-
-    // if( socket )
-    //     let position = socket.position;
     
     // const condition = { $and:[ { status: 'new' }, { orderBy: { $ne: req.user._id }}] };
     // const condition = { $and:[ { status: 'new' }] };

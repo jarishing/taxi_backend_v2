@@ -30,6 +30,8 @@ async function login( req, res, next ){
         if ( user ){
             if( user.type != req.body.type )
                 return next( errors.InternalServerError('user type error') );
+            if( user.ban == true )
+                return next( errors.Unauthorized( info ) );
             if( user.valid == false && user.type == 'driver' )
                 return next( errors.Unauthorized( info ) );
             const token = user.generateJwt();
