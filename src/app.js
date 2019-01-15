@@ -32,8 +32,8 @@ const App = function(){
      * 
      */
 
-    if( process.env.NODE_ENV === 'development')
-        app.use(express.static(__dirname + '/public'));
+    // if( process.env.NODE_ENV === 'development')
+    app.use(express.static(__dirname + '/public'));
     /**
      * 
      * Mount Routes
