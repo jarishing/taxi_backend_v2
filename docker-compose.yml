@@ -4,9 +4,10 @@ services:
   taxi_backend:
     build: ./
     restart: always
+    command: node index.js
     environment:
       - NODE_ENV=production
-      - MONGODB=mongodb://mongodb/taxi_backend
+      - MONGO_URI=mongodb://mongodb/taxi_backend
       - PORT=3100
       - DIGEST_NAME=sha256
       - SECRET_KEY=SERVER_STARTER
