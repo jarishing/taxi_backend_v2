@@ -16,6 +16,8 @@ services:
       - 3100
     links:
       - mongodb
+    ports:
+      - 3100:3100
 
   mongodb:
     image: mongo:latest
