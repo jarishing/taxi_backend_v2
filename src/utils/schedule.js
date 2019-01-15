@@ -4,10 +4,15 @@ var schedule = require('node-schedule'),
     Order    = require('../order/order.model'),
     errors   = require('../errors'),
     Socket   = require('../socket/socket.model'),
+    update   = require('../analysis/analysis.controller/update'),
     debug    = require('debug')('Order');
 
 var emitOrderWithGrade = schedule.scheduleJob( '*/5 * * * * *', function(){
     Socket.broadCastDriver('action', 'RENEW_ORDER_LIST' );
+});
+
+var emitAnalysisData = schedule.scheduleJob( '*/20 * * * * *', function(){
+    // update();
 });
 
 // var confirmOverTimeOrder = schedule.scheduleJob( '*/5 * * * * *',async function(){
@@ -56,6 +61,7 @@ var emitOrderWithGrade = schedule.scheduleJob( '*/5 * * * * *', function(){
 
 module.exports = {
     emitOrderWithGrade,
+    emitAnalysisData
     // confirmOverTimeOrder,
     // delOverTimeOrder
 };

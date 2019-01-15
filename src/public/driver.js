@@ -20,7 +20,7 @@ const type = 'driver',
 //         telephone_no =" 67676767",
 //         password = "456";
 
-let access_token = null;
+let access_token = null, user = null;;
 /**
  * 
  * POST /api/user
@@ -30,6 +30,26 @@ async function register(){
     try {
         const response = await axios.post('http://localhost:3100/api/user', 
             { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo }
+        );
+        return displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+};
+
+async function registerOther(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/user', 
+            { 
+                type:'driver',
+                username:"ken",
+                email:"ken@live.hk",
+                telephone_no:"67676767",
+                password:"123",
+                vehicle_reg_no:"a390",
+                taxi_driver_id_photo:"djsak"
+            }
         );
         return displayMessage(JSON.stringify(response.data, null, 4));
     } catch (error){
@@ -49,6 +69,7 @@ async function login(){
         console.log(response);
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
+        user = response.data.user;
     } catch (error){
         console.error(error.data);
         return displayMessage(JSON.stringify(error, null, 4));
@@ -57,14 +78,39 @@ async function login(){
 
 async function loginOther(){
     try {
-        const response = await axios.post('http://localhost:3100/api/user/login', { email:'john@john.hk', password: '456' });
+        const response = await axios.post('http://localhost:3100/api/user/login', { email:'ken@live.hk', password: '123' });
         displayMessage(JSON.stringify(response.data, null, 4));
         access_token = response.data.access_token;
+        user = response.data.user;
     } catch (error){
         console.error(error.data);
         return displayMessage(JSON.stringify(error, null, 4));
     };
 };
+
+/**
+ * 
+ * PATCH /api/user/
+ * 
+ */
+
+async function update(){
+    try {
+        const response = await axios.patch(
+            'http://localhost:3100/api/user/' + user._id, 
+            { 
+                vehicle_reg_no: "djeiwjdef",
+                telephone_no: "21800000"
+            },
+        { 
+            headers: { Authorization: 'Bearer ' + access_token }
+        });
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
 
 /**
  * 

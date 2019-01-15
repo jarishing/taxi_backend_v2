@@ -4,7 +4,10 @@ const mongoose = require("mongoose"),
 
 const userSchema = new mongoose.Schema({
     type            : { type: String, required: true },
-    email           : String,
+    data            : {
+        email       : String
+    },
+    // email           : String,
     username        : { type: String, required: true },
     telephone_no    : { type: String, unique: true },
     hash            : String,

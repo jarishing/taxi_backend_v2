@@ -4,8 +4,8 @@ const User     = require('../user.model'),
 
 const entry = async (req, res, next) => {
     switch (req.user.type) {
-    case 'admin':
-        return searchUser( req, res, next);
+        case 'admin':
+            return searchUser( req, res, next);
         case 'user':
         case 'driver':
             return get( req, res, next );

@@ -21,15 +21,22 @@ const entry = ( req, res, next ) => {
 let setupIsDone = false;
 
 async function createAdmin(req, res, next){
+    console.log( setupIsDone );
     if( setupIsDone )
         return next( apiError.BadRequest(errors.UserExists()));
     
     try{
+        // let admin = new User({
+        //     type        : 'admin',
+        //     username    : 'admin',
+        //     email       : 'admin@admin.com',
+        //     valid       : true
+        // });
         let admin = new User({
-            type        : 'admin',
-            username    : 'admin',
-            email       : 'admin@admin.com',
-            valid       : true
+            type            : 'admin',
+            username        : 'admin',
+            telephone_no    : 'admin@admin.com',
+            valid           : true
         });
 
         admin.setPassword('123456');
@@ -44,7 +51,7 @@ async function createAdmin(req, res, next){
 
 async function createDriver(req, res, next){
     
-    const { type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo } = req.body;
+    const { type, username, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo } = req.body;
 
     // console.log( type, username, email, telephone_no, password, vehicle_reg_no, taxi_driver_id_photo );
     const details = [];
@@ -62,7 +69,7 @@ async function createDriver(req, res, next){
         if ( driver )
             return next( apiError.BadRequest(errors.UserExists()));
 
-        driver = await User.create({ type, username, email, telephone_no, vehicle_reg_no, taxi_driver_id_photo  }, password );
+        driver = await User.create({ type, username, telephone_no, vehicle_reg_no, taxi_driver_id_photo  }, password );
         // return login(req, res, next );
         return res.send({ data: driver });
     } catch( error ){   
@@ -77,7 +84,7 @@ async function createUser(req, res, next){
     const { type, username, email, telephone_no, password } = req.body;
 
     const details = [];
-    for ( const field of ['username', 'email', 'telephone_no', 'password'])
+    for ( const field of ['username', 'telephone_no', 'password'])
         if ( req.body[field] === undefined)
             details.push( errors.MissingParameter( field ));
 
@@ -92,7 +99,7 @@ async function createUser(req, res, next){
             return next( apiError.BadRequest(errors.UserExists()));
 
         let valid = true;
-        user = await User.create({ type, username, email, telephone_no, valid }, password );
+        user = await User.create({ type, username, telephone_no, valid, data:{ email: email } }, password );
         // return login(req, res, next );
         return res.send({ data: user });
     } catch( error ){   

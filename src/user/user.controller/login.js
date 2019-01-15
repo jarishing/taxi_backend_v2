@@ -12,7 +12,7 @@ const entry = async( req, res, next ) => {
 }
 
 async function adminLogin( req, res, next ){
-    passport.authenticate('admin', function( error, user, info ){
+    passport.authenticate('local', function( error, user, info ){
         if ( error )
             return next( errors.InternalServerError() );
         if ( user ){

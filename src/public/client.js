@@ -1,14 +1,24 @@
+const type = 'user',
+      username = "ken",
+      email = "ken@live.hk",
+      telephone_no =" 69381113",
+      password = "123";
+
 // const type = 'user',
 //       username = "ken",
-//       email = "ken@live.hk",
-//       telephone_no =" 69381113",
+//       telephone_no =" 69381133",
 //       password = "123";
 
-const type = 'user',
-      username = "jari",
-      email = "jari@live.hk",
-      telephone_no =" 67676767",
-      password = "456";
+// const type = 'user',
+//       username = "jari",
+//       email = "jari@live.hk",
+//       telephone_no =" 67676767",
+//       password = "456";
+
+// const type = 'user',
+//       username = "jari",
+//       telephone_no =" 67676767",
+//       password = "456";
 
 let access_token = null, user = null;
 
@@ -26,6 +36,24 @@ async function register(){
         return displayMessage(JSON.stringify(error, null, 4));
     };
 };
+
+async function registerOther(){
+    try {
+        const response = await axios.post('http://localhost:3100/api/user', 
+            { 
+                type: "user", 
+                username: "ken", 
+                telephone_no: "67676767", 
+                password: "456"
+            });
+        return displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+};
+
+
 
 /**
  * 
@@ -48,6 +76,30 @@ async function getUser(){
     try {
         const response = await axios.get(
             'http://localhost:3100/api/user/' + user._id , 
+        { 
+            headers: { Authorization: 'Bearer ' + access_token }
+        });
+        displayMessage(JSON.stringify(response.data, null, 4));
+    } catch (error){
+        console.error(error.data);
+        return displayMessage(JSON.stringify(error, null, 4));
+    };
+}
+
+/**
+ * 
+ * PATCH /api/user/
+ * 
+ */
+
+async function update(){
+    try {
+        const response = await axios.patch(
+            'http://localhost:3100/api/user/' + user._id, 
+            { 
+                email: "jari@hello.hk",
+                telephone_no: "12345678"
+            },
         { 
             headers: { Authorization: 'Bearer ' + access_token }
         });

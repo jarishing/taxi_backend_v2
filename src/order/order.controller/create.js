@@ -29,6 +29,8 @@ async function createOrder( req, res, next ){
         // let data = costCal( origin, destination, route1, route2, route3, criteria.taxiType,  criteria.tunnel, criteria.discount );
         let data = costCal( origin, destination, route, null, null, criteria.taxiType,  criteria.tunnel, criteria.discount ),
             total = Order.find().countDocuments();
+            // total = Order.findOne().sort({created_at: -1});
+
         origin = Place.getAddress( origin.lat, origin.lng );
         destination = Place.getAddress( destination.lat, destination.lng );
         if( route )
