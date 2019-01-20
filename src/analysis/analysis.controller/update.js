@@ -133,8 +133,8 @@ async function update () {
     let distance = 0,cost = 0;
 
     try{
-        let result = Order.find( { $or: [ { status: 'accepted' }, { status: 'commented' }  ] } ).lean();
-        let total = Order.find( { $or: [ { status: 'accepted' }, { status: 'commented' }  ] } ).countDocuments();
+        let result = Order.find( { $or: [ { status: 'accepted' }, { status: 'confirmed' }, { status: 'commented' }  ] } ).lean();
+        let total = Order.find( { $or: [ { status: 'accepted' }, { status: 'confirmed' }, { status: 'commented' }  ] } ).countDocuments();
 
         [ result, total ] = await Promise.all( [ result, total ]);
 
