@@ -26,15 +26,12 @@ async function get(req, res, next){
                                 .select('-__v -salt -hash')
                                 .lean();
 
-        if( user.type == "driver" ){
-            let socket = await Socket
-                            .findOne({ user: user._id })
-                            .lean();
-            if(socket.position)
-                user.position = socket.position;
-        }
+        let socket = await Socket
+                        .findOne({ user: user._id })
+                        .lean();
 
-        // console.log( socket );
+        if ( socket && socket.position)
+            user.position = socket.position;
         
         return res.send({ data: user });
     } catch( error ){
