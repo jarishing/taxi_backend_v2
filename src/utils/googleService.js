@@ -19,11 +19,21 @@ const searchNearBy = async ( lat, lng ) => {
                         .asPromise();
 
     result = result.json.results;
-    
-    result = result.map( item => 
-        item.formatted_address = item.vicinity
-    );
-    return result;
+
+    let data = [];
+
+    result = result.map( item => {
+        // item.name = item.name;
+        // item.formatted_address = item.vicinity;
+
+        data.push({
+            name: item.name,
+            formatted_address: item.vicinity,
+            location: item.geometry.location
+        })
+    });
+    return data;
+    // return result;
 };
 
 const reverseGeocode = async ( lat, lng ) =>{

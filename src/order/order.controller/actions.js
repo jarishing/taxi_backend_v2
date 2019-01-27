@@ -205,7 +205,7 @@ async function release( req, res, next ){
         if( time - order.createdAt > 0 && order.status ==  'confirmed' )
             return next( apiError.BadRequest('order cannot cancel after confirmed over 5 min'));
 
-        order.status = 'new';
+        order.status = 'canceled';
         order.acceptBy = null;
         order = await order.save();
 

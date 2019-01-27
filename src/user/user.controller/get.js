@@ -1,6 +1,7 @@
 const User     = require('../user.model'),
       debug    = require('debug')('User'),
-      apiError = require('server-api-errors');
+      apiError = require('server-api-errors'),
+      Socket   = require('../../socket/socket.model.js');
 
 const entry = async (req, res, next) => {
     switch (req.user.type) {
@@ -15,13 +16,26 @@ const entry = async (req, res, next) => {
 }
 
 async function get(req, res, next){
-    const userId = req.user._id;
+    // const userId = req.user._id;
+    // console.log(userId);
+    const userId = req.params.userId;
 
     try {
         const user = await User
                                 .findById(userId)
                                 .select('-__v -salt -hash')
                                 .lean();
+
+        if( user.type == "driver" ){
+            let socket = await Socket
+                            .findOne({ user: user._id })
+                            .lean();
+            if(socket.position)
+                user.position = socket.position;
+        }
+
+        // console.log( socket );
+        
         return res.send({ data: user });
     } catch( error ){
         debug(error)

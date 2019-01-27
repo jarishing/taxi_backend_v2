@@ -15,7 +15,7 @@ async function comment( req, res, next ) {
 
     let order = req.order;
 
-    if ( order.status != 'confirmed' )
+    if ( order.status != 'confirmed' && order.status != 'accepted')
         return next(apiError.Forbidden());
 
     try {
