@@ -17,6 +17,8 @@ services:
       - 3100
     links:
       - mongodb
+    volumes:
+      - ./public:/home/app/app
     ports:
       - 3100:3100
 
@@ -30,7 +32,7 @@ services:
     expose:
       - 27017
     ports:
-      - 27018:27107
+      - 27017:27107
 
 networks:
   default:
