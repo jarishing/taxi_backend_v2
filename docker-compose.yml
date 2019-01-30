@@ -10,7 +10,7 @@ services:
       - MONGO_URI=mongodb://mongodb/taxi_backend
       - PORT=3100
       - DIGEST_NAME=sha256
-      - SECRET_KEY=TEXT_APP
+      - SECRET_KEY=SERVER_STARTER
       - DEBUG=User,Order,Place,Auth,Error,Socket,APIError
       - GOOGLE_API_KEY=AIzaSyA83jZKHRmlOFXwdDM81X_pl7kyLb5o4FI
     expose:
