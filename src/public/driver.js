@@ -2,7 +2,7 @@ const type = 'driver',
       username = "ben",
       email = "ben@live.hk",
       telephone_no ="69381113",
-      password = "123",
+      password = "123456",
       vehicle_reg_no = "a12347",
       taxi_driver_id_photo = "b4703";
 
@@ -122,7 +122,7 @@ async function makeOrder(){
     try {
         const response = await axios.post('http://localhost:3100/api/order', 
             {
-                origin: "東海大廈", destination: "仁賢大廈",
+                origin: "東海大廈", destination: "屌你老母", route: "信和中心",
                 criteria: {
                     taxiType: 'green', 
                     discount: 100,

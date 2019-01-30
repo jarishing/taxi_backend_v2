@@ -1,7 +1,7 @@
 const type = 'user',
       username = "ken",
       email = "ken@live.hk",
-      telephone_no =" 69381113",
+      telephone_no ="69381113",
       password = "123";
 
 // const type = 'user',
