@@ -4,9 +4,10 @@ const LocalStrategy = require("passport-local").Strategy,
       debug         = require('debug')('passport'),
       errors        = require('../errors');
       
-async function Validate(telephone_no, password, callback){
+async function Validate(req, telephone_no, password, callback){
+    console.log( telephone_no, password );
     try {
-        const user = await User.findOne({ telephone_no: telephone_no });
+        const user = await User.findOne({ $and: [{ telephone_no: telephone_no}, { type: req.body.type }] });
         if ( user ){
             if ( user.validPassword(password) == false )
                 return callback(null, null, errors.ValidationError("Password not match", "password"));
@@ -14,9 +15,14 @@ async function Validate(telephone_no, password, callback){
         } else 
             return callback(null, null, errors.ValidationError("User not found", "telephone_no"));
     } catch ( error ){
+        console.log( error );
         debug(error);
         return callback(error, null, apiError.InternalServerError() );
     }
 };
 
-module.exports = exports = new LocalStrategy({usernameField: 'telephone_no'}, Validate);
+module.exports = exports = 
+new LocalStrategy({
+    usernameField: 'telephone_no', 
+    passwordField: 'password',
+    passReqToCallback: true}, Validate );

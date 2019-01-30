@@ -65,37 +65,65 @@ async function createOrder( req, res, next ){
 
 async function driverCreateOrder( req, res, next ){
     let { origin, destination, route, criteria } = req.body;
+    let data;
 
-    origin = directSearch( origin );
+    originData = directSearch( origin );
     // origin = directSearch( "xszxaxascas" );
-    destination = directSearch( destination );
+    destinationData = directSearch( destination );
 
     let total = Order.find().countDocuments();
 
-    [ origin, destination, total ] = await Promise.all([ origin, destination, total ]);
-
-    if( origin.length == 0 || destination == 0 )
-        return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+    [ originData, destinationData, total ] = await Promise.all([ originData, destinationData, total ]);
 
     if( route ){
-        route = await directSearch( route);
-        if( route.length == 0 )
-            return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+        routeData = await directSearch( route);
+        if( routeData.length == 0 )
+            routeData = null;
     }else
-        route = null;
+        routeData = null;
 
     try {
-        let data = await costCal( origin, destination, route, null, null, criteria.taxiType,  criteria.tunnel, criteria.discount );
+        if( originData.length != 0 && destinationData.length != 0 && route && routeData )
+            data = await costCal( originData, destinationData, routeData, null, null, criteria.taxiType,  criteria.tunnel, criteria.discount );
+        else
+            data = { cost: null, time: null, distance: null };
         
+        if( originData.length == 0 ){
+            originData = {
+                address: origin,
+                lat: null,
+                lng: null,
+                offset:[]
+            }
+        }
+
+        if( destinationData.length == 0 ){
+            destinationData = {
+                address: destination,
+                lat: null,
+                lng: null,
+                offset:[]
+            }
+        }
+
+        if( route && !routeData ){
+            routeData = {
+                address: route,
+                lat: null,
+                lng: null,
+                offset:[]
+            }
+        }
+
         criteria['cost'] = data.cost;
         criteria['time'] = data.time;
         criteria['distance'] = data.distance;
 
         let order = await Order.create({
             orderId  : 10000 + total,
-            start    : origin,
-            end      : destination,
-            route    : route,
+            start    : originData,
+            end      : destinationData,
+            route    : routeData,
             criteria : criteria,
             orderBy  : req.user._id  
         });
@@ -112,6 +140,50 @@ async function driverCreateOrder( req, res, next ){
 }
 
 module.exports = exports = entry;
+
+
+// if( origin.length == 0 || destination == 0 )
+// return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+
+// if( route ){
+// route = await directSearch( route);
+// if( route.length == 0 )
+//     return next( apiError.BadRequest( errors.ValidationError("Address can not find")));
+// }else
+// route = null;
+
+// if( )
+
+// if( originData.length == 0 ){
+    // originData = {
+    //     address: origin,
+    //     lat: null,
+    //     lng: null,
+    //     offset:[]
+    // }
+// }
+
+// if( destinationData.length == 0 ){
+    // destinationData = {
+    //     address: destination,
+    //     lat: null,
+    //     lng: null,
+    //     offset:[]
+    // }
+// }
+
+// if( route ){
+//     routeData = await directSearch( route);
+//     if( routeData.length == 0 ){
+//         routeData = {
+//             address: route,
+//             lat: null,
+//             lng: null,
+//             offset:[]
+//         }
+//     }
+// }else
+//     routeData = null;
 
 // { address: '香港太子東海大廈',
 //   lat: 22.32338,

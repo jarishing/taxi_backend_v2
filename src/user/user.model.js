@@ -3,13 +3,14 @@ const mongoose = require("mongoose"),
       jwt      = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
-    type            : { type: String, required: true },
+    type            : { type: String, required: true, unique: false },
     data            : {
         email       : String
     },
     // email           : String,
     username        : { type: String, required: true },
-    telephone_no    : { type: String, unique: true },
+    // telephone_no    : { type: String, unique: true },
+    telephone_no    : { type: String, required: true, unique: false },
     hash            : String,
     salt            : String,
     grade           : { type: String, default: 'C', enum: [ 'S', 'A', 'B', 'C', 'D', 'E' ] },
@@ -17,6 +18,8 @@ const userSchema = new mongoose.Schema({
     valid           : { type: Boolean, default: false },
     ban             : { type: Boolean, default: false }
 }, { timestamps: true, strict: false });
+
+userSchema.index({type:1,telephone_no:1},{unique:true});
 
 userSchema.methods.setPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString('hex');

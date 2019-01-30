@@ -19,7 +19,7 @@ var confirmOverTimeOrder = schedule.scheduleJob( '*/5 * * * * *',async function(
     let time = new Date(),
         conditions = { $and:[ { status: 'new' }] };
 
-    time.setMinutes( time.getMinutes() - 1);
+    time.setMinutes( time.getMinutes() - 3);
     // time.setSeconds(time.getSeconds()-10);
     conditions.$and.push( { updatedAt: { $lte: time} } );
 

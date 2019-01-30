@@ -64,7 +64,8 @@ async function createDriver(req, res, next){
 
     try {
 
-        let driver = await User.findOne({ telephone_no: telephone_no });
+        let driver = await User.findOne({ $and: [{ telephone_no: telephone_no}, { type: 'driver'}] });
+        // let driver = await User.findOne({ telephone_no: telephone_no});
      
         if ( driver )
             return next( apiError.BadRequest(errors.UserExists()));
@@ -93,7 +94,8 @@ async function createUser(req, res, next){
 
     try {
 
-        let user = await User.findOne({ telephone_no: telephone_no });
+        let user = await User.findOne({ $and: [{ telephone_no: telephone_no}, { type: 'user'}] });
+        // let user = await User.findOne({ telephone_no: telephone_no });
 
         if ( user )
             return next( apiError.BadRequest(errors.UserExists()));
