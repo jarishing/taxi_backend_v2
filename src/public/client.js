@@ -198,7 +198,10 @@ async function createOrder(){
                     taxiType: 'red', 
                     discount: 100,
                     tunnel: 'any',
-                    passenger: 4
+                    passenger: 4 ,
+                    payment: 'cash',
+                    return: true,
+                    fixedPrice: 400
                 }
             },
             { 
@@ -221,7 +224,10 @@ async function createOrderOther(){
                     taxiType: 'red', 
                     discount: 85,
                     tunnel: 'any',
-                    passenger: 4
+                    passenger: 4,
+                    payment: 'creditCard',
+                    return: false,
+                    fixedPrice: null
                 }
             },
             { 

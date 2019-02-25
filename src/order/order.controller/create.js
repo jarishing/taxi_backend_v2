@@ -38,6 +38,9 @@ async function createOrder( req, res, next ){
 
         [ data, total, origin, destination ] = await Promise.all([ data, total, origin, destination ]);
 
+        if( criteria.return )
+            data.cost = data.cost*2;
+
         criteria['cost'] = data.cost;
         criteria['time'] = data.time;
         criteria['distance'] = data.distance;

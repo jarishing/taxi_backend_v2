@@ -43,6 +43,14 @@ const orderSchema = new mongoose.Schema({
             type: Number,
             require: true
         },
+        return: {
+            type: Boolean,
+            require: true
+        },
+        fixedPrice: {
+            type: Number,
+            require: true
+        },
         payment:{
             type: String,
             enum: [ 'any', 'cash', 'octopus', 'wechat', 'creditCard', 'alipay' ],
