@@ -129,8 +129,8 @@ async function makeOrder(){
                     tunnel: 'any',
                     passenger: 5,
                     payment: 'creditCard',
-                    return: false,
-                    fixedPrice: null
+                    return: true,
+                    fixedPrice: 123
                     // tunnel: 'eastTunnel'
                 }
             },

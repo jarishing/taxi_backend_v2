@@ -66,7 +66,7 @@ async function getOrders( req, res, next ){
                 condition.$and.push( { orderBy: req.user._id } );
                 break;
             }else if ( req.user.type == 'driver' ){
-                condition = { $and:[ { status: { $ne: 'badOrder' } } ] };
+                condition = { $and:[ { status: { $ne: 'badOrder' } }, { status: { $ne: 'canceled' } } ,{ status: { $ne: 'new' } }  ] };
                 if( req.query.identity == 'orderer')
                     // condition.$and.push( { orderBy: req.user._id } );
                     return driverMakeOrderList( req, res, next );
@@ -84,7 +84,7 @@ async function getOrders( req, res, next ){
         let orders = await Order
                                 .find(condition)
                                 .populate('orderBy acceptBy')
-                                .sort({createdAt: 1})
+                                .sort({createdAt: -1})
                                 .lean();
 
         return res.json({ data: orders, count: orders.length });
@@ -102,7 +102,7 @@ async function driverMakeOrderList( req, res, next ){
         let orders = await Order
                                 .find(condition)
                                 .populate('orderBy acceptBy')
-                                .sort({createdAt: 1})
+                                .sort({createdAt: -1})
                                 .limit(20)
                                 .lean();
 
