@@ -62,7 +62,7 @@ async function getOrders( req, res, next ){
             if( req.user.type == 'admin' )
                 break;
             else if ( req.user.type == 'user' ){
-                condition = { $and:[ { status: { $ne: 'badOrder' } }, { status: { $ne: 'new' } },  ] };
+                condition = { $and:[ { status: { $ne: 'badOrder' } }, { status: { $ne: 'new' } }  ] };
                 condition.$and.push( { orderBy: req.user._id } );
                 break;
             }else if ( req.user.type == 'driver' ){

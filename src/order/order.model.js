@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema({
     criteria: {
         taxiType: { 
             type: String,
-            enum: [ 'red', 'green' ],
+            enum: [ 'red', 'green', 'blue' ],
             required: true
         },
         passenger:{
