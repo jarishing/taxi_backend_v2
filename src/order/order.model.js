@@ -56,6 +56,9 @@ const orderSchema = new mongoose.Schema({
             enum: [ 'any', 'cash', 'octopus', 'wechat', 'creditCard', 'alipay' ],
             require: true
         },
+        otherPhone: {
+            type: String
+        },
         required: {
             type: String
         }

@@ -27,6 +27,12 @@ module.exports = exports = {
     update: require('./update'),
     /**
      * 
+     * forget password
+     * 
+     */
+    forget: require('./forget'),
+    /**
+     * 
      * Delete Account
      * 
      */

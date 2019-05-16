@@ -219,9 +219,11 @@ async function update () {
                 }
 
                 //for average distance
-                distance = distance + item.criteria.distance;
+                if( item.criteria.distance )
+                    distance = distance + item.criteria.distance;
                 //for average cost
-                cost = cost + parseInt(item.criteria.cost);
+                if( item.criteria.cost )
+                    cost = cost + parseInt(item.criteria.cost);
             });
 
             distance = distance / total;

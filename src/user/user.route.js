@@ -14,6 +14,9 @@ router.route('/login')
     // login route
     .post( userController.login );
 
+router.route('/forgetPassword')
+    .post( userController.forget );
+
 router.route('/')
     .get( userController.list )
     .post( userController.create );

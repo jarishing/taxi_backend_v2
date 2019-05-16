@@ -130,7 +130,8 @@ async function makeOrder(){
                     passenger: 5,
                     payment: 'creditCard',
                     return: true,
-                    fixedPrice: 123
+                    fixedPrice: 123,
+                    otherPhone: '21800000'
                     // tunnel: 'eastTunnel'
                 }
             },

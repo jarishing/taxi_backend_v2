@@ -135,6 +135,8 @@ async function driverCreateOrder( req, res, next ){
 
         // broadcastWithGrade( );
 
+        console.log("-----------checking-----------")
+        console.log(order.criteria);
         return res.send({ data: order });
     } catch( error ){
         console.error(error)
