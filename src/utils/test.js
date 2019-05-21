@@ -8,7 +8,7 @@ AWS.config.update({
 
 var params = {
     Message: 'Hello mother fucker',
-    PhoneNumber: '+85267677836',
+    PhoneNumber: '+85212013010431',
 };
   
 // Create promise and SNS service object

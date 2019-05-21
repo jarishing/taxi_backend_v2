@@ -26,7 +26,6 @@ async function forgetPw ( req, res, next ){
         let id = uuid();
         id = id.substring(0,8);
 
-        console.log(id);
         user.setPassword(id);
         user.save();
 

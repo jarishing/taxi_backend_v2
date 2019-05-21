@@ -1,8 +1,15 @@
 const User = require('../user.model'),
       apiError = require('server-api-errors'),
+      AWS = require('aws-sdk'),
       errors = require('../../errors'),
       debug = require('debug')('User'),
       login = require('./login.js');
+
+AWS.config.update({
+    "accessKeyId":"AKIAI54DQ77BPWGL5K5A",
+    "secretAccessKey":"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",
+    "region":"ap-southeast-1" 
+})
 
 const entry = ( req, res, next ) => {
     // console.log(req.body.type);
@@ -71,6 +78,13 @@ async function createDriver(req, res, next){
             return next( apiError.BadRequest(errors.UserExists()));
 
         driver = await User.create({ type, username, telephone_no, vehicle_reg_no, taxi_driver_id_photo  }, password );
+
+        let message = {
+            Message: `您好！打的 已經收到您的申請，我們會盡快處理您的申請。 `,
+            PhoneNumber: `+852${telephone_no}`,
+        }
+
+        await new AWS.SNS({apiVersion: '2010-03-31'}).publish(message).promise();
         // return login(req, res, next );
         return res.send({ data: driver });
     } catch( error ){   
