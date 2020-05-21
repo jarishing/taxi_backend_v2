@@ -24,13 +24,26 @@ const entry = async( req, res, next) => {
 
         /**
          * 
+         * user confirm order
+         * 
+         */
+        case 'confirm':
+            if( req.user.type !== 'driver' )
+                return next( apiError.Forbidden(errors.ValidationError('Only user can confirm order')));  
+            if( req.order.status != 'accepted' )
+                return next( apiError.Forbidden(errors.ValidationError('Order status error')));  
+            return confirm( req, res, next );
+        /**
+         * 
          * User cancel the order
          * 
          */
         case 'cancel':
-            if ( req.user.type == 'user' || req.user.type == 'driver' )
-                return cancelByUser( req, res, next );
-            return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));   
+            if ( req.user.type !== 'user'  && req.user.type !== 'driver' )
+                return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));
+            if ( req.order.status != 'new' && req.order.status != 'accepted' && req.order.status != 'confirmed' ) 
+                return next( apiError.Forbidden(errors.ValidationError('Order status error')));  
+            return cancelByUser( req, res, next );
             // if ( req.user.type == 'driver')
             //     return cancelByDriver( req, res, next );
 
@@ -41,8 +54,22 @@ const entry = async( req, res, next) => {
          */
         case 'release':
             if ( req.user.type != 'driver')
-                return next( apiError.Forbidden(errors.ValidationError('Only driver can release order')));   
+                return next( apiError.Forbidden(errors.ValidationError('Only driver can release order')));
+            if ( req.order.status != 'accepted' && req.order.status != 'confirmed' )
+                return next( apiError.Forbidden(errors.ValidationError('Order status error')));  
             return release( req, res, next );
+
+        /**
+         * 
+         * User confirm overtime order
+         * 
+         */
+        case 'overtime':
+            if ( req.user.type !== 'user'  && req.user.type !== 'driver' )
+                return next( apiError.Forbidden(errors.ValidationError('Only user can cancel order')));
+            if ( req.order.status != 'new' && req.order.overtime == true )
+                return next( apiError.Forbidden(errors.ValidationError('Order status error')));  
+            return overtime( req, res, next );
 
         default: 
             return next( apiError.Forbidden(errors.MissingParameter('Invalid or missing action type. ')));   
@@ -53,28 +80,18 @@ async function accept( req, res, next ){
 
     try{
         let order = req.order;
-        
-        let socket = await Socket.findOne({ user: order.orderBy });
-
-        if(socket)
-            socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
-         
         order.status = 'accepted';
         order.acceptBy = req.user._id;
         order = await order.save();
 
-        socket = await Socket.findOne({ user: order.orderBy });
+        let socket = await Socket.findOne({ user: order.orderBy });
 
-
-        if ( socket ){
+        if( socket ){
             socket.emitSocket('action', Socket.type.DRIVER_ACCEPT );
-            Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
-            return res.json({ status: 1, data: order });
-        } else {
-            await Order.update({ order: order._id }, { status: 'badOrder'} );
-            return res.json({ status: 0 });
-        };
-
+            return res.json({ received: 1, data: order });
+        }else{
+            return res.json({ received: 0, data: order });
+        }
                     
     } catch ( error ){
         console.log(error);
@@ -83,71 +100,98 @@ async function accept( req, res, next ){
 
 };
 
+async function confirm( req, res, next ){
+    try{
+        let order = req.order;
+        order.status = 'confirmed';
+        order = await order.save();
+
+        let socket = await Socket.findOne({ user: order.orderBy });
+
+        if( socket ){
+            socket.emitSocket('action', 'DRIVER_CONFIRM' );
+            return res.json({ received: 1, data: order });
+        }else{
+            return res.json({ received: 0, data: order });
+        }
+    } catch ( error ){
+        console.log(error);
+        return next( apiError.InternalServerError());   
+    };
+}
+
 async function cancelByUser( req, res, next ){
     
     try{
-        let order = req.order;
-        let time = new Date();
+        let order = req.order,
+            time = new Date();
 
         time.setMinutes(time.getMinutes()-5);
 
-        if(order.createdAt - time > 0 && order.status ==  'accept' )
-            return next( apiError.BadRequest('order cannot cancel after 5 min'));
+        if( time - order.createdAt > 0 && order.status ==  'confirmed' )
+            return next( apiError.BadRequest('order cannot cancel after confirmed over 5 min'));
 
         order.status = 'canceled';
         order = await order.save();
 
         if ( order._doc.acceptBy ){
             const socket = await Socket.findOne({ user: order._doc.acceptBy });
-            if ( socket )
+            if ( socket ){
                 socket.emitSocket('action', 'USER_CANCEL' );
+                return res.json({ received: 1, data: order });
+            }
         };
-
-        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
         
-        return res.json({ data: order });
+        return res.json({ received: 0, data: order });
     } catch ( error ){
         return next( apiError.InternalServerError());   
     };
 
 };
 
-// async function cancelByDriver( req, res, next ){
-//     try{
-//         let order = req.order;
-//         order.status = 'canceled';
-//         order = await order.save();
-
-//         if( order._doc.acceptBy ){
-            
-//         };
-
-//         return res.json({ data: order });
-//     } catch ( error ){
-//         return next( apiError.InternalServerError());   
-//     };
-// }
-
 async function release( req, res, next ){
-    
     try{
-        let order = req.order;
-        order.status = 'new';
+        let order = req.order,
+            time = new Date();
+
+        time.setMinutes( time.getMinutes() - 5);
+
+        if( time - order.createdAt > 0 && order.status ==  'confirmed' )
+            return next( apiError.BadRequest('order cannot cancel after confirmed over 5 min'));
+
+        order.status = 'canceled';
         order.acceptBy = null;
         order = await order.save();
 
-        socket = await Socket.findOne({ user: order.orderBy });
+        let socket = await Socket.findOne({ user: order.orderBy });
 
-        if( socket )
+        if( socket ){
             socket.emitSocket('action', 'DRIVER_RELEASE' );
+            return res.json({ received: 1, data: order });
+        }
         
-        Socket.broadCastDriver('action', Socket.type.NEW_ORDER );
-        return res.json({ data: order });
+        return res.json({ received: 0, data: order });
     } catch ( error ){
+        console.log( error );
         return next( apiError.InternalServerError());   
     };
 
 };
+
+async function overtime( req, res, next ){
+    try{
+        let order = req.order;
+
+        console.log( order );
+        order.overtime = false;
+        order = await order.save();
+
+        return res.json({ data: order });
+    }catch ( error ){
+        console.log( error );
+        return next( apiError.InternalServerError());   
+    };
+}
 
 
 module.exports = exports = entry;

@@ -24,5 +24,17 @@ module.exports = exports = {
 
     load : require('./load'),
 
-    update: require('./update')
+    update: require('./update'),
+    /**
+     * 
+     * forget password
+     * 
+     */
+    forget: require('./forget'),
+    /**
+     * 
+     * Delete Account
+     * 
+     */
+    deleteAccount: require('./delete')
 };

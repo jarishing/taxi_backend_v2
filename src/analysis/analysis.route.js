@@ -7,7 +7,7 @@ router.route('/')
     .get( auth.admin, analysisController.get );
 
 //testing
-router.route('/update')
-    .get( analysisController.update );
+// router.route('/update')
+//     .get( analysisController.update );
 
 module.exports = router;

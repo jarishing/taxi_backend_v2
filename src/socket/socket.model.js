@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose"),
+      
       SocketIO = require('socket.io'),
       withinRange = require('../utils/withinRange'),
       debug = require('debug')('Socket'),
@@ -84,7 +85,8 @@ socketSchema.statics.drop = async function( socketId ){
     const socket = await this.findOne({ socketId });
     
     if ( socket ){
-        await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
+        if( socket.type == "user" )
+            await Order.update({ orderBy: socket._doc.user, status: 'new' }, { status:'badOrder' });
     }
 
     await this.find({ socketId }).remove().exec();
@@ -107,7 +109,9 @@ socketSchema.methods.whatIsMe = async function( access_token ){
     const doc = jwt.verify(access_token, process.env.SECRET_KEY);
 
     const updated = await Socket.findOneAndUpdate({ socketId: this.socketId }, { user: doc._id, type: doc.type }, { upsert: true, new: true }).exec();
-
+    // console.log( updated );
+    if( updated )
+        updated.emitSocket('action', 'CONNECTION' );
     // debug(updated);
 };
 

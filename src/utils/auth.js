@@ -25,6 +25,12 @@ async function valid(req, res, next){
     if ( req.user.valid != true )
         return next( apiError.Forbidden());
     return next();
+};
+
+async function ban( req, res, next ){
+    if ( req.user.ban == true )
+        return next( apiError.Forbidden());
+    return next();
 }
 
 async function admin(req, res, next){
@@ -39,6 +45,6 @@ async function user(req, res, next){
     return next();
 };
 
-module.exports = exports = [ auth, getUser, valid ];
-exports.admin = [ auth, getUser, valid, admin ];
-exports.user = [ auth, getUser, valid,  user ];
+module.exports = exports = [ auth, getUser, valid, ban ];
+exports.admin = [ auth, getUser, admin ];
+exports.user = [ auth, getUser, valid, ban,  user ];

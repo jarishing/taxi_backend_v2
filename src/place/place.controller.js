@@ -5,6 +5,7 @@ const Place    = require('./place.model'),
       apiError = require('server-api-errors'),
       errors   = require('../errors'),
       costCal  = require('../utils/costCal'),
+      uuid     = require('uuid/v1'),
       Google   = require('../utils/googleService');
 
 async function find( req, res, next ){
@@ -63,10 +64,33 @@ async function getLocationAddress( req, res, next ){
         let data = result.map( item => ({
             address     : item.formatted_address,
             location    : item.geometry.location,
-            placeId     : item.place_id
+            placeId     : item.place_id,
+            description : item.formatted_address,
+            offset      : []
         }));
 
-        return res.send( { data, count: data.length } );
+        let newPlace = new Place({
+            keyword : uuid(),
+            result  : data
+        });
+
+        newPlace = await newPlace.save();
+        return res.json({ data: data });
+
+        // console.log(data);
+
+        // let docs = data.map( item => ({
+        //     keyword: item.address,
+        //     result: [{
+        //         address: item.address,
+        //         location: item.location
+        //     }]
+        // }));
+        
+        // await Place.insertMany(docs);
+
+        // return res.send( { data: docs} );
+        // return res.send( { data, count: data.length } );
     } catch( error ){
         console.log(error);
         return next( new apiError.InternalServerError() );

@@ -12,4 +12,6 @@ router.use('/order', require('./order/order.route'));
 
 router.use('/analysis', require('./analysis/analysis.route'));
 
+router.use('/upload', require('./utils/uploadPhoto'));
+
 module.exports = router;

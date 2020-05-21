@@ -6,7 +6,8 @@ const express = require('express'),
 
 const App = function(){
     
-    passport.use(require('./utils/passport.local'));
+    passport.use('local', require('./utils/passport.local'));
+    passport.use('admin', require('./utils/passport.admin'));
 
     const app = express();
     
@@ -18,18 +19,21 @@ const App = function(){
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(require("helmet").noCache());
-    if ( process.env.NODE_ENV == "development")
+    // if ( process.env.NODE_ENV == "development")
         app.use(require('morgan')('dev'));
     app.use(require('body-parser').json());
     app.use(require('body-parser').urlencoded({ extended: false }));
     app.use(require('cookie-parser')());
     app.use(require('cors')());
 
+     /**
+     * 
+     * public folder
+     * 
+     */
+
     // if( process.env.NODE_ENV === 'development')
-        // app.use(express.static(__dirname + '/public'));
-
-    app.use(express.static(path.join(__dirname, 'build')));
-
+    app.use(express.static(__dirname + '/public'));
     /**
      * 
      * Mount Routes
@@ -38,11 +42,12 @@ const App = function(){
     app.use("/api", require('./index.route'));
     // Catch the 404 error and pass it to the error handler
 
-    app.get('*', function (req, res) {
-        res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    app.use(express.static(path.resolve( __dirname, 'build')));  
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve( __dirname, 'build', 'index.html'));
     });
 
-    
     app.use( (req, res, next ) => {
         const error = new apiError.NotFound();
         return next( error);
